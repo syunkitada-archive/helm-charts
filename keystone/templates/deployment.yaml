@@ -1,0 +1,85 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: keystone-public
+  labels:
+    chart: keystone
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: keystone-public
+    spec:
+      containers:
+      - name: keystone-public
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: keystone-etc
+          mountPath: /mnt/keystone-etc
+        - name: keystone-bin
+          mountPath: /mnt/keystone-bin
+        env:
+        - name: UWSGI_FILE
+          value: '/opt/keystone/bin/keystone-wsgi-public'
+        - name: UWSGI_PORT
+          value: '5000'
+        - name: UWSGI_PROCESSES
+          value: '2'
+        - name: UWSGI_THREADS
+          value: '1'
+      volumes:
+      - name: keystone-etc
+        configMap:
+          name: keystone-etc
+      - name: keystone-bin
+        configMap:
+          name: keystone-bin
+
+
+---
+
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: keystone-admin
+  labels:
+    chart: keystone
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: keystone-admin
+    spec:
+      containers:
+      - name: keystone-admin
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 35357
+        volumeMounts:
+        - name: keystone-etc
+          mountPath: /mnt/keystone-etc
+        - name: keystone-bin
+          mountPath: /mnt/keystone-bin
+        env:
+        - name: UWSGI_FILE
+          value: '/opt/keystone/bin/keystone-wsgi-admin'
+        - name: UWSGI_PORT
+          value: '35357'
+        - name: UWSGI_PROCESSES
+          value: '2'
+        - name: UWSGI_THREADS
+          value: '1'
+      volumes:
+      - name: keystone-etc
+        configMap:
+          name: keystone-etc
+      - name: keystone-bin
+        configMap:
+          name: keystone-bin

@@ -27,3 +27,10 @@ https://github.com/kubernetes/charts/tree/master/stable/memcached
 ```
 helm install stable/memcached --name openstack-cache --set replicaCount=1,memcached.maxItemMemory=512
 ```
+
+
+### openstack-common
+This is openstack common configurations and tools.
+``` deploy openstack-common
+helm install --name openstack-common openstack-common
+```

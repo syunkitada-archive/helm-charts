@@ -13,31 +13,48 @@ spec:
     spec:
       containers:
       - name: keystone-public
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["bash", "-c", "python3 /mnt/bin/init-uwsgi/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 5000
         volumeMounts:
-        - name: keystone-etc
-          mountPath: /mnt/keystone-etc
-        - name: keystone-bin
-          mountPath: /mnt/keystone-bin
+        - name: etc-keystone
+          mountPath: /mnt/etc/keystone
+        - name: bin-keystone
+          mountPath: /mnt/bin/keystone
+        - name: bin-init-uwsgi
+          mountPath: /mnt/bin/init-uwsgi
+        - name: etc-nginx
+          mountPath: /mnt/etc/nginx
         env:
         - name: UWSGI_FILE
           value: '/opt/keystone/bin/keystone-wsgi-public'
         - name: UWSGI_PORT
-          value: '5000'
+          value: '3031'
         - name: UWSGI_PROCESSES
           value: '2'
         - name: UWSGI_THREADS
           value: '1'
+        - name: UWSGI_SCRIPT_NAME
+          value: 'public'
+        - name: SERVER_PORT
+          value: '5000'
       volumes:
-      - name: keystone-etc
+      - name: etc-keystone
         configMap:
-          name: keystone-etc
-      - name: keystone-bin
+          name: etc-keystone
+      - name: etc-nginx
         configMap:
-          name: keystone-bin
+          name: etc-nginx
+      - name: bin-keystone
+        configMap:
+          name: bin-keystone
+      - name: bin-init-uwsgi
+        configMap:
+          name: bin-init-uwsgi
+
 
 
 ---
@@ -58,28 +75,44 @@ spec:
     spec:
       containers:
       - name: keystone-admin
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["bash", "-c", "python3 /mnt/bin/init-uwsgi/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 35357
         volumeMounts:
-        - name: keystone-etc
-          mountPath: /mnt/keystone-etc
-        - name: keystone-bin
-          mountPath: /mnt/keystone-bin
+        - name: etc-keystone
+          mountPath: /mnt/etc/keystone
+        - name: bin-keystone
+          mountPath: /mnt/bin/keystone
+        - name: bin-init-uwsgi
+          mountPath: /mnt/bin/init-uwsgi
+        - name: etc-nginx
+          mountPath: /mnt/etc/nginx
         env:
         - name: UWSGI_FILE
           value: '/opt/keystone/bin/keystone-wsgi-admin'
         - name: UWSGI_PORT
-          value: '35357'
+          value: '3031'
         - name: UWSGI_PROCESSES
           value: '2'
         - name: UWSGI_THREADS
           value: '1'
+        - name: UWSGI_SCRIPT_NAME
+          value: 'admin'
+        - name: SERVER_PORT
+          value: '35357'
       volumes:
-      - name: keystone-etc
+      - name: etc-keystone
         configMap:
-          name: keystone-etc
-      - name: keystone-bin
+          name: etc-keystone
+      - name: etc-nginx
         configMap:
-          name: keystone-bin
+          name: etc-nginx
+      - name: bin-keystone
+        configMap:
+          name: bin-keystone
+      - name: bin-init-uwsgi
+        configMap:
+          name: bin-init-uwsgi

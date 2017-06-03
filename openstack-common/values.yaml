@@ -1,0 +1,23 @@
+# Default values for openstack-common.
+
+
+openstack:
+  database:
+    dbs: [keystone]
+    user: root
+    password: rootpass
+  admin_password: adminpass
+  service_map:
+    keystone:
+      region: RegionOne
+      public_url: http://keystone:5000/v3/
+      internal_url: http://keystone:5000/v3/
+      admin_url: http://keystone:35357/v3/
+
+keystone:
+  default:
+    debug: false
+  database:
+    connection: mysql+pymysql://root:rootpass@openstack-db-mariadb/keystone
+  token:
+    provider: fernet

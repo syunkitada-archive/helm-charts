@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: neutron-server
+  labels:
+    chart: neutron
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: neutron-server
+    spec:
+      containers:
+      - name: neutron-server
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 9292
+        volumeMounts:
+        - name: etc-neutron
+          mountPath: /mnt/etc/neutron
+        - name: bin-neutron
+          mountPath: /mnt/bin/neutron
+        - name: bin-init-eventlet
+          mountPath: /mnt/bin/init-eventlet
+        env:
+        - name: START_CMD
+          value: '/opt/neutron/bin/neutron-server --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini'
+      volumes:
+      - name: etc-neutron
+        configMap:
+          name: etc-neutron
+      - name: bin-neutron
+        configMap:
+          name: bin-neutron
+      - name: bin-init-eventlet
+        configMap:
+          name: bin-init-eventlet

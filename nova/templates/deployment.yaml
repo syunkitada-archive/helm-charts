@@ -1,0 +1,41 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: nova-api
+  labels:
+    chart: nova
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: nova-api
+    spec:
+      containers:
+      - name: nova-api
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 9292
+        volumeMounts:
+        - name: etc-nova
+          mountPath: /mnt/etc/nova
+        - name: bin-nova
+          mountPath: /mnt/bin/nova
+        - name: bin-init-eventlet
+          mountPath: /mnt/bin/init-eventlet
+        env:
+        - name: START_CMD
+          value: '/opt/nova/bin/nova-api --config-file /etc/nova/nova.conf'
+      volumes:
+      - name: etc-nova
+        configMap:
+          name: etc-nova
+      - name: bin-nova
+        configMap:
+          name: bin-nova
+      - name: bin-init-eventlet
+        configMap:
+          name: bin-init-eventlet

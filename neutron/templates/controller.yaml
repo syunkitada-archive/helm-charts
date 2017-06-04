@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: keystone-controller
+  name: neutron-controller
   labels:
-    chart: keystone
+    chart: neutron
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
-      name: keystone-controller
+      name: neutron-controller
       labels:
-        chart: keystone
+        chart: neutron
     spec:
       containers:
-      - name: keystone-controller
+      - name: neutron-controller
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
         command: ["bash", "-c", "python3 /mnt/bin/init-controller/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -21,27 +21,27 @@ spec:
         volumeMounts:
         - name: etc-common
           mountPath: /mnt/etc/common
-        - name: etc-keystone
-          mountPath: /mnt/etc/keystone
-        - name: bin-keystone
-          mountPath: /mnt/bin/keystone
+        - name: etc-neutron
+          mountPath: /mnt/etc/neutron
+        - name: bin-neutron
+          mountPath: /mnt/bin/neutron
         - name: bin-init-controller
           mountPath: /mnt/bin/init-controller
         env:
         - name: WATCH_FILES
-          value: '/mnt/bin/keystone/bootstrap.sh,/mnt/bin/keystone/dbsync.sh'
+          value: '/mnt/bin/neutron/bootstrap.sh,/mnt/bin/neutron/dbsync.sh'
         - name: WATCH_INTERVAL
           value: '10'
       volumes:
       - name: etc-common
         configMap:
           name: etc-common
-      - name: etc-keystone
+      - name: etc-neutron
         configMap:
-          name: etc-keystone
-      - name: bin-keystone
+          name: etc-neutron
+      - name: bin-neutron
         configMap:
-          name: bin-keystone
+          name: bin-neutron
       - name: bin-init-controller
         configMap:
           name: bin-init-controller

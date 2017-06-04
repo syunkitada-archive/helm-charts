@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: neutron-server
+  labels:
+    chart: neutron
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9696
+    targetPort: 9696
+    protocol: TCP
+    name: neutron-server
+  selector:
+    app: neutron-server

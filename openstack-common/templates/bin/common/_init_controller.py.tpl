@@ -20,9 +20,13 @@ def main():
         })
 
     for watch_file in watch_files:
-        p = subprocess.Popen(['/bin/bash', watch_file['file']], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout_data, stderr_data = p.communicate()
-        print(stdout_data)
+        p = subprocess.Popen(['/bin/bash', '-xe', watch_file['file']], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return_code = p.wait()
+        print("return_code: {0}\nstdout: {1}\nstderr:{2}\n".format(
+            return_code, p.stdout, p.stderr
+        ))
+        if return_code != 0:
+            exit(return_code)
 
     while True:
         for watch_file in watch_files:

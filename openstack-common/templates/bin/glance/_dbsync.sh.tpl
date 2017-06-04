@@ -7,5 +7,3 @@
 /opt/glance/bin/glance-manage db_sync
 
 source /mnt/etc/common/adminrc
-
-openstack image list

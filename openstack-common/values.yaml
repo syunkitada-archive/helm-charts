@@ -40,6 +40,30 @@ openstack:
       public_url: http://glance-api:9292
       internal_url: http://glance-api:9292
       admin_url: http://glance-api:9292
+    neutron:
+      enable: true
+      description: "OpenStack Networking"
+      type: network
+      region: RegionOne
+      public_url: http://neutron-server:9696
+      internal_url: http://neutron-server:9696
+      admin_url: http://neutron-server:9696
+    nova:
+      enable: true
+      description: "OpenStack Compute"
+      type: compute
+      region: RegionOne
+      public_url: http://nova-api:8774/v2.1
+      internal_url: http://nova-api:8774/v2.1
+      admin_url: http://nova-api:8774/v2.1
+    placement:
+      enable: true
+      description: "Placement API"
+      type: placement
+      region: RegionOne
+      public_url: http://placement-api:8778
+      internal_url: http://placement-api:8778
+      admin_url: http://placement-api:8778
 
 keystone:
   default:

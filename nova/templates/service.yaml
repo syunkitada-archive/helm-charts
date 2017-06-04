@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nova-api
+  labels:
+    chart: nova
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8774
+    targetPort: 8774
+    protocol: TCP
+    name: nova-api
+  selector:
+    app: nova-api

@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-common
+data:
+  adminrc: |+
+{{ tuple "etc/common/_adminrc.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-nginx
+data:
+  nginx.conf: |+
+{{ tuple "etc/nginx/_nginx.conf.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-keystone
+data:
+  keystone.conf: |+
+{{ tuple "etc/keystone/_keystone.conf.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-glance
+data:
+  glance-api.conf: |+
+{{ tuple "etc/glance/_glance-api.conf.tpl" . | include "funcs.template" | indent 4 }}
+  glance-registry.conf: |+
+{{ tuple "etc/glance/_glance-registry.conf.tpl" . | include "funcs.template" | indent 4 }}

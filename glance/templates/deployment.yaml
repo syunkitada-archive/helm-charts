@@ -1,0 +1,87 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: glance-api
+  labels:
+    chart: glance
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: glance-api
+    spec:
+      containers:
+      - name: glance-api
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 9292
+        volumeMounts:
+        - name: etc-glance
+          mountPath: /mnt/etc/glance
+        - name: bin-glance
+          mountPath: /mnt/bin/glance
+        - name: bin-init-eventlet
+          mountPath: /mnt/bin/init-eventlet
+        env:
+        - name: START_CMD
+          value: '/opt/glance/bin/glance-api --config-file /etc/glance/glance-api.conf'
+      volumes:
+      - name: etc-glance
+        configMap:
+          name: etc-glance
+      - name: bin-glance
+        configMap:
+          name: bin-glance
+      - name: bin-init-eventlet
+        configMap:
+          name: bin-init-eventlet
+
+
+---
+
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: glance-registry
+  labels:
+    chart: glance
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: glance-registry
+    spec:
+      containers:
+      - name: glance-registry
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 9191
+        volumeMounts:
+        - name: etc-glance
+          mountPath: /mnt/etc/glance
+        - name: bin-glance
+          mountPath: /mnt/bin/glance
+        - name: bin-init-eventlet
+          mountPath: /mnt/bin/init-eventlet
+        env:
+        - name: START_CMD
+          value: '/opt/glance/bin/glance-registry --config-file /etc/glance/glance-registry.conf'
+      volumes:
+      - name: etc-glance
+        configMap:
+          name: etc-glance
+      - name: bin-glance
+        configMap:
+          name: bin-glance
+      - name: bin-init-eventlet
+        configMap:
+          name: bin-init-eventlet

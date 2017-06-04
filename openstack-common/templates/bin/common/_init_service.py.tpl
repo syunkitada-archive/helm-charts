@@ -11,7 +11,7 @@ def main():
     service.init()
 
     watch_files = []
-    for watch_file in service.watch_files:
+    for watch_file in service.WATCH_FILES:
         watch_files.append({
             'file': watch_file,
             'current_hash': md5(watch_file),
@@ -49,7 +49,7 @@ def main():
             if p is not None:
                 process = p
 
-        time.sleep(service.watch_interval)
+        time.sleep(service.WATCH_INTERVAL)
 
 
 def md5(filename):

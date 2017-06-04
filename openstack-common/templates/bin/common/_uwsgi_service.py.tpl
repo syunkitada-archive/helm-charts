@@ -11,7 +11,7 @@ UWSGI_FILE = os.environ['UWSGI_FILE']
 UWSGI_PORT = os.environ['UWSGI_PORT']
 UWSGI_PROCESSES = os.environ['UWSGI_PROCESSES']
 UWSGI_THREADS = os.environ['UWSGI_THREADS']
-cmd = '/opt/keystone/bin/uwsgi --socket 127.0.0.1:{0} --wsgi-file {1} --processes {2} --threads {3}'.format(
+cmd = '/opt/keystone/bin/uwsgi --socket 127.0.0.1:{0} --master --wsgi-file {1} --processes {2} --threads {3}'.format(
     UWSGI_PORT, UWSGI_FILE, UWSGI_PROCESSES, UWSGI_THREADS)
 
 
@@ -56,9 +56,8 @@ def create_nginx_conf():
 server {{"{{"}}
     listen {server_port};
     location / {{"{{"}}
-      root html;
       uwsgi_pass 127.0.0.1:{uwsgi_port};
-      uwsgi_param SCRIPT_NAME {uwsgi_script_name};
+      uwsgi_param SCRIPT_NAME '';
       include uwsgi_params;
    {{"}}"}}
 {{"}}"}}""".format(uwsgi_script_name=UWSGI_SCRIPT_NAME, server_port=SERVER_PORT, uwsgi_port=UWSGI_PORT))

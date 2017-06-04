@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-init-uwsgi
+data:
+  init.py: |+
+{{ tuple "bin/common/_init_service.py.tpl" . | include "funcs.template" | indent 4 }}
+  service.py: |+
+{{ tuple "bin/common/_uwsgi_service.py.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-init-eventlet
+data:
+  init.py: |+
+{{ tuple "bin/common/_init_service.py.tpl" . | include "funcs.template" | indent 4 }}
+  service.py: |+
+{{ tuple "bin/common/_eventlet_service.py.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-init-executer
+data:
+  init.py: |+
+{{ tuple "bin/common/_init_executer.py.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-keystone
+data:
+  bootstrap.sh: |+
+{{ tuple "bin/keystone/_bootstrap.sh.tpl" . | include "funcs.template" | indent 4 }}
+  dbsync.sh: |+
+{{ tuple "bin/keystone/_dbsync.sh.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-glance
+data:
+  bootstrap.sh: |+
+{{ tuple "bin/glance/_bootstrap.sh.tpl" . | include "funcs.template" | indent 4 }}
+  dbsync.sh: |+
+{{ tuple "bin/glance/_dbsync.sh.tpl" . | include "funcs.template" | indent 4 }}

@@ -1,12 +1,55 @@
-#!/bin/sh -xe
+#!/bin/bash -xe
+
+{{$keystone := .Values.openstack.service_map.keystone}}
+{{$glance := .Values.openstack.service_map.glance}}
+{{$admin_password := .Values.openstack.admin_password}}
 
 # Setup db
-mysql -u{{.Values.openstack.database.user}} -p{{.Values.openstack.database.password}} -e 'CREATE DTABASE IF NOT EXISTS keystone'
+{{range $database, $database_data := .Values.openstack.database_map}}
+{{range $dbname := $database_data.dbs}}
+mysql -h{{$database_data.host}} -P{{$database_data.port}} \
+      -u{{$database_data.user}} -p{{$database_data.password}} -e 'CREATE DATABASE IF NOT EXISTS {{$dbname}}'
+{{end}}
+{{end}}
+
 /opt/keystone/bin/keystone-manage db_sync
 
 # Setup bootstrap
-/opt/keystone/bin/keystone-manage bootstrap --bootstrap-password {{.Values.openstack.service_map.admin_password}} \
-  --bootstrap-admin-url {{.Values.openstack.service_map.admin_url}} \
-  --bootstrap-internal-url {{.Values.openstack.service_map.internal_url}} \
-  --bootstrap-public-url {{.Values.openstack.service_map.public_url}} \
-  --bootstrap-region-id {{.Values.openstack.service_map.region}}
+/opt/keystone/bin/keystone-manage bootstrap --bootstrap-password {{$admin_password}} \
+  --bootstrap-admin-url {{$keystone.admin_url}} \
+  --bootstrap-internal-url {{$keystone.internal_url}} \
+  --bootstrap-public-url {{$keystone.public_url}} \
+  --bootstrap-region-id {{$keystone.region}}
+
+
+source /mnt/etc/common/adminrc
+
+
+# Setup projects
+{{range $project := .Values.openstack.projects}}
+openstack project show {{$project}} || openstack project create {{$project}}
+{{end}}
+
+
+# Setup users
+{{range $user, $user_data := .Values.openstack.user_map}}
+openstack user show openstack \
+|| ( \
+openstack user create --domain {{$user_data.domain}} --password {{$user_data.password}} {{$user_data.user}} && \
+openstack role add --project {{$user_data.project}} --user {{$user_data.user}} {{$user_data.role}} \
+)
+{{end}}
+
+
+# Setup services
+{{range $service, $service_data := .Values.openstack.service_map}}
+{{if or (ne $service "keystone") $service_data.enable}}
+openstack service show {{$service}} \
+|| ( \
+openstack service create --name {{$service}} --description "{{$service_data.description}}" {{$service_data.type}} && \
+openstack endpoint create --region {{$service_data.region}} {{$service_data.type}} public   {{$service_data.public_url}} && \
+openstack endpoint create --region {{$service_data.region}} {{$service_data.type}} internal {{$service_data.internal_url}} && \
+openstack endpoint create --region {{$service_data.region}} {{$service_data.type}} admin    {{$service_data.admin_url}} \
+)
+{{end}}
+{{end}}

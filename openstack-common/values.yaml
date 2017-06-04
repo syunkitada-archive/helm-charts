@@ -2,17 +2,44 @@
 
 
 openstack:
-  database:
-    dbs: [keystone]
-    user: root
-    password: rootpass
+  memcached_servers: openstack-cache-memcache:11211
+  enable_services:
+    - keystone
+    - glance
+    - nova
+    - neutron
+  database_map:
+    common:
+      dbs: [keystone, glance, nova, neutron]
+      host: openstack-db-mariadb
+      port: 3306
+      user: root
+      password: rootpass
   admin_password: adminpass
+  projects: [service]
+  user_map:
+    service:
+      user: openstack
+      password: openstackpass
+      domain: default
+      project: service
+      role: admin
   service_map:
     keystone:
       region: RegionOne
-      public_url: http://keystone:5000/v3/
-      internal_url: http://keystone:5000/v3/
-      admin_url: http://keystone:35357/v3/
+      public_url: http://keystone-public:5000/v3/
+      internal_url: http://keystone-public:5000/v3/
+      admin_url: http://keystone-admin:35357/v3/
+      auth_uri: http://keystone-public:5000
+      auth_url: http://keystone-admin:35357
+    glance:
+      enable: true
+      description: "OpenStack Image"
+      type: image
+      region: RegionOne
+      public_url: http://glance-api:9292
+      internal_url: http://glance-api:9292
+      admin_url: http://glance-api:9292
 
 keystone:
   default:

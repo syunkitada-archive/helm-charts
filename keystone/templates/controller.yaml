@@ -1,0 +1,47 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: keystone-controller
+  labels:
+    chart: keystone
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      name: keystone-controller
+      labels:
+        chart: keystone
+    spec:
+      containers:
+      - name: keystone-controller
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["bash", "-c", "python3 /mnt/bin/init-executer/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - name: etc-common
+          mountPath: /mnt/etc/common
+        - name: etc-keystone
+          mountPath: /mnt/etc/keystone
+        - name: bin-keystone
+          mountPath: /mnt/bin/keystone
+        - name: bin-init-executer
+          mountPath: /mnt/bin/init-executer
+        env:
+        - name: WATCH_FILES
+          value: '/mnt/bin/keystone/bootstrap.sh,/mnt/bin/keystone/dbsync.sh'
+        - name: WATCH_INTERVAL
+          value: '10'
+      volumes:
+      - name: etc-common
+        configMap:
+          name: etc-common
+      - name: etc-keystone
+        configMap:
+          name: etc-keystone
+      - name: bin-keystone
+        configMap:
+          name: bin-keystone
+      - name: bin-init-executer
+        configMap:
+          name: bin-init-executer

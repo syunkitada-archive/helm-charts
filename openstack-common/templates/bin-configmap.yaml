@@ -1,3 +1,5 @@
+{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -40,7 +42,7 @@ data:
   bootstrap.sh: |+
 {{ tuple "bin/keystone/_bootstrap.sh.tpl" . | include "funcs.template" | indent 4 }}
   dbsync.sh: |+
-{{ tuple "bin/keystone/_dbsync.sh.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "bin/keystone/_dbsync.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix}}
 
 ---
 

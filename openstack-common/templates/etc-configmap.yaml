@@ -1,10 +1,12 @@
+{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: etc-common
 data:
   adminrc: |+
-{{ tuple "etc/common/_adminrc.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/common/_adminrc.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   resolv.conf: |+
 {{ tuple "etc/common/_resolv.conf.tpl" . | include "funcs.template" | indent 4 }}
 
@@ -26,7 +28,7 @@ metadata:
   name: etc-keystone
 data:
   keystone.conf: |+
-{{ tuple "etc/keystone/_keystone.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/keystone/_keystone.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
 
 ---
 
@@ -36,9 +38,9 @@ metadata:
   name: etc-glance
 data:
   glance-api.conf: |+
-{{ tuple "etc/glance/_glance-api.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/glance/_glance-api.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   glance-registry.conf: |+
-{{ tuple "etc/glance/_glance-registry.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/glance/_glance-registry.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
 
 ---
 
@@ -48,7 +50,7 @@ metadata:
   name: etc-neutron
 data:
   neutron.conf: |+
-{{ tuple "etc/neutron/_neutron.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/neutron/_neutron.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   ml2_conf.ini: |+
 {{ tuple "etc/neutron/_ml2_conf.ini.tpl" . | include "funcs.template" | indent 4 }}
   linuxbridge_agent.ini: |+
@@ -66,4 +68,4 @@ metadata:
   name: etc-nova
 data:
   nova.conf: |+
-{{ tuple "etc/nova/_nova.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/nova/_nova.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

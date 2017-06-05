@@ -2,6 +2,7 @@
 {{$keystone := .Values.openstack.service_map.keystone}}
 {{$db := .Values.openstack.database_map.common}}
 [DEFAULT]
+debug = true
 workers = 2
 registry_host = glance-registry
 registry_port = 9191

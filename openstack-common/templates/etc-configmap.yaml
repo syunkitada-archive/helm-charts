@@ -5,6 +5,8 @@ metadata:
 data:
   adminrc: |+
 {{ tuple "etc/common/_adminrc.tpl" . | include "funcs.template" | indent 4 }}
+  resolv.conf: |+
+{{ tuple "etc/common/_resolv.conf.tpl" . | include "funcs.template" | indent 4 }}
 
 ---
 
@@ -45,7 +47,7 @@ kind: ConfigMap
 metadata:
   name: etc-neutron
 data:
-  neutron-api.conf: |+
+  neutron.conf: |+
 {{ tuple "etc/neutron/_neutron.conf.tpl" . | include "funcs.template" | indent 4 }}
   ml2_conf.ini: |+
 {{ tuple "etc/neutron/_ml2_conf.ini.tpl" . | include "funcs.template" | indent 4 }}
@@ -63,5 +65,5 @@ kind: ConfigMap
 metadata:
   name: etc-nova
 data:
-  nova-api.conf: |+
+  nova.conf: |+
 {{ tuple "etc/nova/_nova.conf.tpl" . | include "funcs.template" | indent 4 }}

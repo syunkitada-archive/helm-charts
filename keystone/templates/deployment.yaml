@@ -41,6 +41,8 @@ spec:
           value: 'public'
         - name: SERVER_PORT
           value: '5000'
+        - name: WATCH_FILES
+          value: '/mnt/etc/keystone/keystone.conf'
       volumes:
       - name: etc-keystone
         configMap:
@@ -103,6 +105,8 @@ spec:
           value: 'admin'
         - name: SERVER_PORT
           value: '35357'
+        - name: WATCH_FILES
+          value: '/mnt/etc/keystone/keystone.conf'
       volumes:
       - name: etc-keystone
         configMap:

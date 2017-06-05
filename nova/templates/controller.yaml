@@ -1,19 +1,19 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: glance-controller
+  name: nova-controller
   labels:
-    chart: glance
+    chart: nova
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
-      name: glance-controller
+      name: nova-controller
       labels:
-        chart: glance
+        chart: nova
     spec:
       containers:
-      - name: glance-controller
+      - name: nova-controller
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
         command: ["bash", "-c", "python3 /mnt/bin/init-controller/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -21,27 +21,27 @@ spec:
         volumeMounts:
         - name: etc-common
           mountPath: /mnt/etc/common
-        - name: etc-glance
-          mountPath: /mnt/etc/glance
-        - name: bin-glance
-          mountPath: /mnt/bin/glance
+        - name: etc-nova
+          mountPath: /mnt/etc/nova
+        - name: bin-nova
+          mountPath: /mnt/bin/nova
         - name: bin-init-controller
           mountPath: /mnt/bin/init-controller
         env:
         - name: WATCH_FILES
-          value: '/mnt/bin/glance/bootstrap.sh,/mnt/bin/glance/dbsync.sh'
+          value: '/mnt/bin/nova/bootstrap.sh,/mnt/bin/nova/dbsync.sh'
         - name: WATCH_INTERVAL
           value: '10'
       volumes:
       - name: etc-common
         configMap:
           name: etc-common
-      - name: etc-glance
+      - name: etc-nova
         configMap:
-          name: etc-glance
-      - name: bin-glance
+          name: etc-nova
+      - name: bin-nova
         configMap:
-          name: bin-glance
+          name: bin-nova
       - name: bin-init-controller
         configMap:
           name: bin-init-controller

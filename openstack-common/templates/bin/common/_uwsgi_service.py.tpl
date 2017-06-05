@@ -3,8 +3,8 @@
 import os
 import subprocess
 
-WATCH_FILES = []
-WATCH_INTERVAL = 10
+WATCH_FILES = os.environ.get('WATCH_FILES', '').split(',')
+WATCH_INTERVAL = os.environ.get('WATCH_INTERVAL', 10)
 SERVER_PORT = os.environ['SERVER_PORT']
 UWSGI_SCRIPT_NAME = os.environ['UWSGI_SCRIPT_NAME']
 UWSGI_FILE = os.environ['UWSGI_FILE']

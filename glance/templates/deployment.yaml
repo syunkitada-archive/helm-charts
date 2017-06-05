@@ -11,6 +11,7 @@ spec:
       labels:
         app: glance-api
     spec:
+      hostNetwork: true
       containers:
       - name: glance-api
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
@@ -22,6 +23,9 @@ spec:
         volumeMounts:
         - name: etc-glance
           mountPath: /mnt/etc/glance
+        - name: etc-common
+          mountPath: /etc/resolv.conf
+          subPath: resolv.conf
         - name: bin-glance
           mountPath: /mnt/bin/glance
         - name: bin-init-eventlet
@@ -29,10 +33,15 @@ spec:
         env:
         - name: START_CMD
           value: '/opt/glance/bin/glance-api --config-file /etc/glance/glance-api.conf'
+        - name: WATCH_FILES
+          value: '/mnt/etc/glance/glance-api.conf'
       volumes:
       - name: etc-glance
         configMap:
           name: etc-glance
+      - name: etc-common
+        configMap:
+          name: etc-common
       - name: bin-glance
         configMap:
           name: bin-glance
@@ -68,6 +77,9 @@ spec:
         volumeMounts:
         - name: etc-glance
           mountPath: /mnt/etc/glance
+        - name: etc-common
+          mountPath: /etc/resolv.conf
+          subPath: resolv.conf
         - name: bin-glance
           mountPath: /mnt/bin/glance
         - name: bin-init-eventlet
@@ -75,10 +87,15 @@ spec:
         env:
         - name: START_CMD
           value: '/opt/glance/bin/glance-registry --config-file /etc/glance/glance-registry.conf'
+        - name: WATCH_FILES
+          value: '/mnt/etc/glance/glance-registry.conf'
       volumes:
       - name: etc-glance
         configMap:
           name: etc-glance
+      - name: etc-common
+        configMap:
+          name: etc-common
       - name: bin-glance
         configMap:
           name: bin-glance

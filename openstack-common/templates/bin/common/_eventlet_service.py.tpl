@@ -3,8 +3,8 @@
 import os
 import subprocess
 
-WATCH_FILES = []
-WATCH_INTERVAL = 10
+WATCH_FILES = os.environ.get('WATCH_FILES', '').split(',')
+WATCH_INTERVAL = int(os.environ.get('WATCH_INTERVAL', 10))
 START_CMD = os.environ['START_CMD']
 cmd = '{0}'.format(START_CMD)
 

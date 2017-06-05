@@ -1,5 +1,12 @@
 # Default values for openstack-common.
 
+network:
+  dns:
+    kubernetes_domain: cluster.local
+    # this must list the skydns server first, and in calico
+    # this is consistently 10.96.0.10
+    servers:
+    - 10.96.0.10
 
 openstack:
   memcached_servers: openstack-cache-memcache:11211
@@ -7,10 +14,18 @@ openstack:
     - keystone
     - glance
     - nova
+    - nova_api
     - neutron
+  rpc_map:
+    common:
+      user: openstack
+      password: openstackpass
+      host: openstack-rpc-rabbitmq
+      port: 5672
+      vhost: ''
   database_map:
     common:
-      dbs: [keystone, glance, nova, neutron]
+      dbs: [keystone, glance, nova, nova_api, neutron]
       host: openstack-db-mariadb
       port: 3306
       user: root
@@ -67,8 +82,8 @@ openstack:
 
 keystone:
   default:
-    debug: false
+    debug: true
   database:
     connection: mysql+pymysql://root:rootpass@openstack-db-mariadb/keystone
   token:
-    provider: fernet
+    provider: uuid

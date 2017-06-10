@@ -69,3 +69,14 @@ metadata:
 data:
   nova.conf: |+
 {{ tuple "etc/nova/_nova.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-horizon
+data:
+  local_settings.py: |+
+{{ tuple "etc/horizon/_local_settings.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

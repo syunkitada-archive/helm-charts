@@ -14,7 +14,7 @@ spec:
       containers:
       - name: keystone-public
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["bash", "-c", "python3 /mnt/bin/init-uwsgi/init.py"]
+        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-uwsgi/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
@@ -29,16 +29,12 @@ spec:
         - name: etc-nginx
           mountPath: /mnt/etc/nginx
         env:
+        - name: UWSGI_PATH
+          value: '/opt/keystone/bin/uwsgi'
         - name: UWSGI_FILE
           value: '/opt/keystone/bin/keystone-wsgi-public'
-        - name: UWSGI_PORT
-          value: '3031'
         - name: UWSGI_PROCESSES
           value: '2'
-        - name: UWSGI_THREADS
-          value: '1'
-        - name: UWSGI_SCRIPT_NAME
-          value: 'public'
         - name: SERVER_PORT
           value: '5000'
         - name: WATCH_FILES
@@ -78,7 +74,7 @@ spec:
       containers:
       - name: keystone-admin
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["bash", "-c", "python3 /mnt/bin/init-uwsgi/init.py"]
+        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-uwsgi/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
@@ -93,16 +89,12 @@ spec:
         - name: etc-nginx
           mountPath: /mnt/etc/nginx
         env:
+        - name: UWSGI_PATH
+          value: '/opt/keystone/bin/uwsgi'
         - name: UWSGI_FILE
           value: '/opt/keystone/bin/keystone-wsgi-admin'
-        - name: UWSGI_PORT
-          value: '3031'
         - name: UWSGI_PROCESSES
           value: '2'
-        - name: UWSGI_THREADS
-          value: '1'
-        - name: UWSGI_SCRIPT_NAME
-          value: 'admin'
         - name: SERVER_PORT
           value: '35357'
         - name: WATCH_FILES

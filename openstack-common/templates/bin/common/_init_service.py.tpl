@@ -4,6 +4,9 @@ import time
 import hashlib
 import os
 import service
+import util
+
+LOG = util.getLog(__name__)
 
 
 def main():
@@ -26,25 +29,25 @@ def main():
                 watch_file['current_hash'] = tmp_hash
 
         if process is None:
-            print('service start.')
+            LOG.info('service start.')
             process = service.start()
 
         if not check_pid(process):
-            print('service pid is not found.')
-            print('service start.')
+            LOG.info('service pid is not found.')
+            LOG.info('service start.')
             process = service.start()
 
         elif not service.check(process):
-            print('service check is failed.')
+            LOG.info('service check is failed.')
             if check_pid(process):
-                print('service stop. {0}'.format(process.pid))
+                LOG.info('service stop. {0}'.format(process.pid))
                 service.stop(process)
 
-            print('service start.')
+            LOG.info('service start.')
             process = service.start()
 
         if is_reload:
-            print('file changed and service start.')
+            LOG.info('file changed and service start.')
             p = service.reload(process)
             if p is not None:
                 process = p

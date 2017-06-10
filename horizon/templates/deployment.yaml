@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: horizon
+  labels:
+    chart: horizon
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: horizon
+    spec:
+      containers:
+      - name: horizon
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-uwsgi/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: etc-horizon
+          mountPath: /mnt/etc/horizon
+        - name: bin-horizon
+          mountPath: /mnt/bin/horizon
+        - name: bin-init-uwsgi
+          mountPath: /mnt/bin/init-uwsgi
+        - name: etc-nginx
+          mountPath: /mnt/etc/nginx
+        env:
+        - name: UWSGI_PATH
+          value: '/opt/horizon/bin/uwsgi'
+        - name: UWSGI_PROCESSES
+          value: '2'
+        - name: SERVER_PORT
+          value: '80'
+        - name: WATCH_FILES
+          value: '/mnt/etc/horizon/local_settings.py'
+        - name: STATIC_PATH
+          value: '/opt/horizon/share/horizon/static'
+      volumes:
+      - name: etc-horizon
+        configMap:
+          name: etc-horizon
+      - name: etc-nginx
+        configMap:
+          name: etc-nginx
+      - name: bin-horizon
+        configMap:
+          name: bin-horizon
+      - name: bin-init-uwsgi
+        configMap:
+          name: bin-init-uwsgi

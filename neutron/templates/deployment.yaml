@@ -14,7 +14,7 @@ spec:
       containers:
       - name: neutron-server
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
+        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:

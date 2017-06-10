@@ -2,7 +2,9 @@
 
 import os
 import subprocess
+import util
 
+LOG = util.getLog(__name__)
 WATCH_FILES = os.environ.get('WATCH_FILES', '').split(',')
 WATCH_INTERVAL = int(os.environ.get('WATCH_INTERVAL', 10))
 START_CMD = os.environ['START_CMD']
@@ -10,13 +12,7 @@ cmd = '{0}'.format(START_CMD)
 
 
 def init():
-    for root, dirs, files in os.walk('/mnt/bin/'):
-        for file in files:
-            if file == 'bootstrap.sh':
-                bootstrap_file = os.path.join(root, file)
-                p = subprocess.Popen(['/bin/sh', bootstrap_file], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                stdout_data, stderr_data = p.communicate()
-                print(stdout_data)
+    util.execute_bootstrap()
 
 
 def start():

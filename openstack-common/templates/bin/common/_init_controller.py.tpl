@@ -1,15 +1,19 @@
+#!/usr/bin/env python
 # coding: utf-8
 
 import subprocess
 import time
 import hashlib
 import os
+import util
 
+LOG = util.getLog(__name__)
 WATCH_FILES  = os.environ['WATCH_FILES']
 WATCH_INTERVAL = int(os.environ['WATCH_INTERVAL'])
 
 
 def main():
+    LOG.info('start controller')
     process = None
 
     watch_files = []
@@ -24,13 +28,10 @@ def main():
             tmp_hash = md5(watch_file['file'])
             if tmp_hash != watch_file['current_hash']:
                 watch_file['current_hash'] = tmp_hash
-                p = subprocess.Popen(['/bin/bash', '-xe', watch_file['file']], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                return_code = p.wait()
-                print("return_code: {0}\nstdout: {1}\nstderr:{2}\n".format(
-                    return_code, p.stdout, p.stderr
-                ))
-                if return_code != 0:
-                    exit(return_code)
+                cmd = [watch_file['file']]
+                result = util.execute(cmd, is_chmod=True)
+                if result['return_code'] != 0:
+                    raise Exception('Failed cmd: {0}'.format(cmd))
 
         time.sleep(WATCH_INTERVAL)
 

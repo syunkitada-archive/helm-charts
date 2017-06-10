@@ -7,7 +7,7 @@
 {{- $rpc := .Values.openstack.rpc_map.common}}
 
 [DEFAULT]
-debug = true
+debug = false
 transport_url = rabbit://{{$rpc.user}}:{{$rpc.password}}@{{$rpc.host}}:{{$rpc.port}}{{$rpc.vhost}}
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver

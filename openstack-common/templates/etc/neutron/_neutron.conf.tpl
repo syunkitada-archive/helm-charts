@@ -20,6 +20,10 @@ rpc_workers = 1
 connection = mysql+pymysql://{{$db.user}}:{{$db.password}}@{{$db.host}}:{{$db.port}}/neutron
 
 
+[agent]
+root_helper =
+
+
 [keystone_authtoken]
 auth_uri = {{$keystone.auth_uri}}
 auth_url = {{$keystone.auth_url}}

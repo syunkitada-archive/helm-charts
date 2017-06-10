@@ -17,6 +17,8 @@ spec:
         command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: true
         volumeMounts:
         - name: etc-neutron
           mountPath: /mnt/etc/neutron
@@ -27,6 +29,11 @@ spec:
           mountPath: /mnt/bin/neutron
         - name: bin-init-eventlet
           mountPath: /mnt/bin/init-eventlet
+        - name: libmodules
+          mountPath: /lib/modules
+          readOnly: true
+        - name: run
+          mountPath: /run
         env:
         - name: START_CMD
           value: '/opt/neutron/bin/neutron-linuxbridge-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /etc/neutron/plugins/ml2/linuxbridge_agent.ini'
@@ -45,3 +52,9 @@ spec:
       - name: bin-init-eventlet
         configMap:
           name: bin-init-eventlet
+      - name: libmodules
+        hostPath:
+          path: /lib/modules
+      - name: run
+        hostPath:
+          path: /run

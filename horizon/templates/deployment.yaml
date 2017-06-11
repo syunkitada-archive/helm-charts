@@ -29,8 +29,14 @@ spec:
         - name: etc-nginx
           mountPath: /mnt/etc/nginx
         env:
+        - name: IS_DJANGO
+          value: 'True'
+        - name: UWSGI_HOME
+          value: '/opt/horizon'
         - name: UWSGI_PATH
-          value: '/opt/horizon/bin/uwsgi'
+          value: '/opt/openstack-tools/bin/uwsgi'
+        - name: UWSGI_FILE
+          value: '/opt/horizon/share/horizon/openstack_dashboard/wsgi/django.wsgi'
         - name: UWSGI_PROCESSES
           value: '2'
         - name: SERVER_PORT

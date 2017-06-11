@@ -13,10 +13,12 @@ spec:
     spec:
       containers:
       - name: nova-api
-        command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        # command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          privileged: true
         ports:
         - containerPort: 8774
         volumeMounts:

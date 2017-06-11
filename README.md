@@ -37,3 +37,23 @@ helm install --name glance glance
 helm install --name neutron neutron
 helm install --name nova nova
 ```
+
+
+# Design
+
+* 各ノードを役割に応じて抽象化しラベルを振る
+  * controller, compute, net-node, block-storage, object-storage, database
+* controller
+  * ステートレスなコンピュート群
+  * ingress, service, deploymentリソースによりAPIを構成するノード群
+  * 重要でないデータを保存するmemcached, rabbitmqもここにデプロイする
+  * chartごとにcontrollerプロセスを用意し、charのステータスを監視し正常性をコントロールする
+* compute, net-node, block-storage, object-storage, database
+  * ステートフルなノード軍
+  * hostnet: true
+  * 場合によりcontrackを無効にし、kubeのネットワークにも乗せない
+  * daemonsetによってcontrollerプロセスを配備し、controllerコンテナないから親ホストの/(ルート)を/hostにマウントする
+  * /host/opt/配下にvirtualenv、/host/etc/に設定ファイル、/lib/systemd/system/にサービスファイルをコピーする
+  * /hostにchrootし、systemdでサービスを起動する
+    * このため、サービスプロセスはkube管轄外となる
+  * controllerプロセスでステータスを監視し正常性をコントロールする

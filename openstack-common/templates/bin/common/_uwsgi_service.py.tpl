@@ -5,27 +5,31 @@ import os
 import subprocess
 
 LOG = util.getLog(__name__)
+
+IS_DJANGO = bool(os.environ.get('IS_DJANGO', False))
+
 WATCH_FILES = os.environ.get('WATCH_FILES', '').split(',')
-WATCH_INTERVAL = os.environ.get('WATCH_INTERVAL', 10)
+WATCH_INTERVAL = int(os.environ.get('WATCH_INTERVAL', 10))
+
+UWSGI_HOME = os.environ.get('UWSGI_HOME', '/opt/horizon')
 SERVER_PORT = os.environ['SERVER_PORT']
 UWSGI_PATH = os.environ.get('UWSGI_PATH')
 UWSGI_FILE = os.environ.get('UWSGI_FILE')
 UWSGI_PORT = os.environ.get('UWSGI_PORT', 3301)
 UWSGI_PROCESSES = os.environ.get('UWSGI_PROCESSES', 1)
 UWSGI_THREADS = os.environ.get('UWSGI_THREADS', 1)
+
+UWSGI_CHDIR = os.environ.get('UWSGI_CHDIR', '/opt/horizon/share/horizon')
+DJANGO_SETTINGS_MODULE = os.environ.get('DJANGO_SETTINGS_MODULE', 'openstack_dashboard.settings')
+STATIC_PATH = os.environ.get('STATIC_PATH')
+
 cmd = '{path} --socket 127.0.0.1:{port} --master --wsgi-file {file} --processes {processes} --threads {threads}'.format(
     path=UWSGI_PATH, port=UWSGI_PORT, file=UWSGI_FILE,
     processes=UWSGI_PROCESSES, threads=UWSGI_THREADS
 )
 
-IS_DJANGO = bool(os.environ.get('IS_DJANGO', True))
-UWSGI_CHDIR = os.environ.get('UWSGI_CHDIR', '/opt/horizon/share/horizon')
-UWSGI_MODULE = os.environ.get('UWSGI_MODULE', 'openstack_dashboard/wsgi/wsgi:application')
-DJANGO_SETTINGS_MODULE = os.environ.get('DJANGO_SETTINGS_MODULE', 'openstack_dashboard.settings')
-UWSGI_HOME = os.environ.get('UWSGI_HOME', '/opt/horizon')
-STATIC_PATH = os.environ.get('STATIC_PATH')
-django_cmd = '/opt/keystone/bin/uwsgi --chdir={chdir} --module={module} --env DJANGO_SETTINGS_MODULE={settings_module} --master --socket=127.0.0.1:{port} --processes={processes} --home={home}'.format(
-    chdir=UWSGI_CHDIR, module=UWSGI_MODULE, settings_module=DJANGO_SETTINGS_MODULE,
+django_cmd = '{path} --chdir={chdir} --wsgi-file={file} --env DJANGO_SETTINGS_MODULE={settings_module} --master --socket=127.0.0.1:{port} --processes={processes} --home={home}'.format(
+    path=UWSGI_PATH, chdir=UWSGI_CHDIR, file=UWSGI_FILE, settings_module=DJANGO_SETTINGS_MODULE,
     home=UWSGI_HOME, processes=UWSGI_PROCESSES, threads=UWSGI_THREADS, port=UWSGI_PORT
 )
 

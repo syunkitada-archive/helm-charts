@@ -89,6 +89,8 @@ spec:
         - name: etc-nginx
           mountPath: /mnt/etc/nginx
         env:
+        - name: UWSGI_HOME
+          value: '/opt/keystone'
         - name: UWSGI_PATH
           value: '/opt/keystone/bin/uwsgi'
         - name: UWSGI_FILE

@@ -11,6 +11,7 @@ debug = false
 transport_url = rabbit://{{$rpc.user}}:{{$rpc.password}}@{{$rpc.host}}:{{$rpc.port}}{{$rpc.vhost}}
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
+compute_driver = libvirt.LibvirtDriver
 
 [api]
 auth_strategy = keystone
@@ -38,6 +39,9 @@ vncserver_proxyclient_address = $my_ip
 
 [oslo_concurrency]
 lock_path = /var/lib/nova/tmp
+
+[libvirt]
+virt_type = qemu
 
 [glance]
 api_servers = {{$glance.internal_url}}

@@ -25,7 +25,7 @@ echo "bootstrap"
   --bootstrap-region-id {{$keystone.region}}
 
 
-source /mnt/etc/common/adminrc
+source /mnt/common/etc/adminrc
 
 
 # Setup projects

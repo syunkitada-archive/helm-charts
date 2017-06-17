@@ -1,0 +1,42 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: openstack-controller
+  labels:
+    chart: openstack-controller
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      name: openstack-controller
+      labels:
+        chart: openstack-controller
+    spec:
+      containers:
+      - name: keystone-controller
+        command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - name: common-etc
+          mountPath: /mnt/common/etc
+        - name: keystone-etc
+          mountPath: /etc/keystone
+        - name: keystone-bin
+          mountPath: /mnt/keystone/bin
+        env:
+        - name: WATCH_FILES
+          value: '/mnt/bin/keystone/bootstrap.sh,/mnt/bin/keystone/dbsync.sh'
+        - name: WATCH_INTERVAL
+          value: '10'
+      volumes:
+      - name: common-etc
+        configMap:
+          name: common-etc
+      - name: keystone-etc
+        configMap:
+          name: keystone-etc
+      - name: keystone-bin
+        configMap:
+          name: keystone-bin
+          defaultMode: 0755

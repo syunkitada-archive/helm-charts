@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: keystone-public
+  name: keystone
   labels:
     chart: keystone
 spec:
@@ -10,26 +10,10 @@ spec:
   - port: 5000
     targetPort: 5000
     protocol: TCP
-    name: keystone-public
-  selector:
-    app: keystone-public
-
-
----
-
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: keystone-admin
-  labels:
-    chart: keystone
-spec:
-  type: ClusterIP
-  ports:
+    name: public
   - port: 35357
     targetPort: 35357
     protocol: TCP
-    name: keystone-admin
+    name: admin
   selector:
-    app: keystone-admin
+    app: keystone

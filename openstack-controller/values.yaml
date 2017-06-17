@@ -1,5 +1,11 @@
 # Default values for openstack-common.
 
+replicaCount: 1
+image:
+  repository: syunkitada/openstack-all
+  tag: stable-ocata
+  pullPolicy: IfNotPresent
+
 network:
   dns:
     kubernetes_domain: cluster.local
@@ -43,11 +49,11 @@ openstack:
   service_map:
     keystone:
       region: RegionOne
-      public_url: http://keystone-public.@domain_suffix:5000/v3/
-      internal_url: http://keystone-public.@domain_suffix:5000/v3/
-      admin_url: http://keystone-admin.@domain_suffix:35357/v3/
-      auth_uri: http://keystone-public.@domain_suffix:5000
-      auth_url: http://keystone-admin.@domain_suffix:35357
+      public_url: http://keystone.@domain_suffix:5000/v3/
+      internal_url: http://keystone.@domain_suffix:5000/v3/
+      admin_url: http://keystone.@domain_suffix:35357/v3/
+      auth_uri: http://keystone.@domain_suffix:5000
+      auth_url: http://keystone.@domain_suffix:35357
     glance:
       enable: true
       description: "OpenStack Image"

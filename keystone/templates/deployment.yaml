@@ -1,7 +1,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: keystone-public
+  name: keystone
   labels:
     chart: keystone
 spec:
@@ -9,108 +9,51 @@ spec:
   template:
     metadata:
       labels:
-        app: keystone-public
+        app: keystone
     spec:
       containers:
+      - name: nginx
+        command: ["/bin/bash", "-c", "nginx -g 'daemon off;'"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: public
+            containerPort: 5000
+          - name: admin
+            containerPort: 35357
+        volumeMounts:
+          - name: keystone-nginx-conf
+            mountPath: /etc/nginx/conf.d
       - name: keystone-public
-        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-uwsgi/init.py"]
+        command: [
+          '/opt/openstack-tools/bin/uwsgi',
+          '--socket', '127.0.0.1:6000', '--master',
+          '--home', '/opt/keystone',
+          '--wsgi-file', '/opt/keystone/bin/keystone-wsgi-public',
+          '--processes', '2', '--threads', '1',
+        ]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - containerPort: 5000
         volumeMounts:
-        - name: etc-keystone
-          mountPath: /mnt/etc/keystone
-        - name: bin-keystone
-          mountPath: /mnt/bin/keystone
-        - name: bin-init-uwsgi
-          mountPath: /mnt/bin/init-uwsgi
-        - name: etc-nginx
-          mountPath: /mnt/etc/nginx
-        env:
-        - name: UWSGI_PATH
-          value: '/opt/keystone/bin/uwsgi'
-        - name: UWSGI_FILE
-          value: '/opt/keystone/bin/keystone-wsgi-public'
-        - name: UWSGI_PROCESSES
-          value: '2'
-        - name: SERVER_PORT
-          value: '5000'
-        - name: WATCH_FILES
-          value: '/mnt/etc/keystone/keystone.conf'
-      volumes:
-      - name: etc-keystone
-        configMap:
-          name: etc-keystone
-      - name: etc-nginx
-        configMap:
-          name: etc-nginx
-      - name: bin-keystone
-        configMap:
-          name: bin-keystone
-      - name: bin-init-uwsgi
-        configMap:
-          name: bin-init-uwsgi
-
-
-
----
-
-
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: keystone-admin
-  labels:
-    chart: keystone
-spec:
-  replicas: {{ .Values.replicaCount }}
-  template:
-    metadata:
-      labels:
-        app: keystone-admin
-    spec:
-      containers:
+          - name: keystone-etc
+            mountPath: /etc/keystone
       - name: keystone-admin
-        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-uwsgi/init.py"]
+        command: [
+          '/opt/openstack-tools/bin/uwsgi',
+          '--socket', '127.0.0.1:36357', '--master',
+          '--home', '/opt/keystone',
+          '--wsgi-file', '/opt/keystone/bin/keystone-wsgi-admin',
+          '--processes', '2', '--threads', '1',
+        ]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - containerPort: 35357
         volumeMounts:
-        - name: etc-keystone
-          mountPath: /mnt/etc/keystone
-        - name: bin-keystone
-          mountPath: /mnt/bin/keystone
-        - name: bin-init-uwsgi
-          mountPath: /mnt/bin/init-uwsgi
-        - name: etc-nginx
-          mountPath: /mnt/etc/nginx
-        env:
-        - name: UWSGI_HOME
-          value: '/opt/keystone'
-        - name: UWSGI_PATH
-          value: '/opt/keystone/bin/uwsgi'
-        - name: UWSGI_FILE
-          value: '/opt/keystone/bin/keystone-wsgi-admin'
-        - name: UWSGI_PROCESSES
-          value: '2'
-        - name: SERVER_PORT
-          value: '35357'
-        - name: WATCH_FILES
-          value: '/mnt/etc/keystone/keystone.conf'
+          - name: keystone-etc
+            mountPath: /etc/keystone
       volumes:
-      - name: etc-keystone
+      - name: keystone-nginx-conf
         configMap:
-          name: etc-keystone
-      - name: etc-nginx
+          name: keystone-nginx-conf
+      - name: keystone-etc
         configMap:
-          name: etc-nginx
-      - name: bin-keystone
-        configMap:
-          name: bin-keystone
-      - name: bin-init-uwsgi
-        configMap:
-          name: bin-init-uwsgi
+          name: keystone-etc

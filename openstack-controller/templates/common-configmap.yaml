@@ -1,0 +1,11 @@
+{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: common-etc
+data:
+  adminrc: |+
+{{ tuple "etc/common/_adminrc.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  resolv.conf: |+
+{{ tuple "etc/common/_resolv.conf.tpl" . | include "funcs.template" | indent 4 }}

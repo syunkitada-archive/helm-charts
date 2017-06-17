@@ -14,7 +14,10 @@ spec:
       containers:
       - name: nova-api
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
+        command: [
+          "/opt/nova/bin/nova-api",
+          "--config-file", "/etc/nova/nova.conf",
+        ]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
@@ -23,115 +26,8 @@ spec:
         - containerPort: 8774
         volumeMounts:
         - name: etc-nova
-          mountPath: /mnt/etc/nova
-        - name: bin-nova
-          mountPath: /mnt/bin/nova
-        - name: bin-init-eventlet
-          mountPath: /mnt/bin/init-eventlet
-        env:
-        - name: START_CMD
-          value: '/opt/nova/bin/nova-api --config-file /etc/nova/nova.conf'
-        - name: WATCH_FILES
-          value: '/mnt/etc/nova/nova.conf'
+          mountPath: /etc/nova
       volumes:
       - name: etc-nova
         configMap:
           name: etc-nova
-      - name: bin-nova
-        configMap:
-          name: bin-nova
-      - name: bin-init-eventlet
-        configMap:
-          name: bin-init-eventlet
-
-
----
-
-
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: nova-scheduler
-  labels:
-    chart: nova
-spec:
-  replicas: {{ .Values.replicaCount }}
-  template:
-    metadata:
-      labels:
-        app: nova-scheduler
-    spec:
-      containers:
-      - name: nova-scheduler
-        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        volumeMounts:
-        - name: etc-nova
-          mountPath: /mnt/etc/nova
-        - name: bin-nova
-          mountPath: /mnt/bin/nova
-        - name: bin-init-eventlet
-          mountPath: /mnt/bin/init-eventlet
-        env:
-        - name: START_CMD
-          value: '/opt/nova/bin/nova-scheduler --config-file /etc/nova/nova.conf'
-        - name: WATCH_FILES
-          value: '/mnt/etc/nova/nova.conf'
-      volumes:
-      - name: etc-nova
-        configMap:
-          name: etc-nova
-      - name: bin-nova
-        configMap:
-          name: bin-nova
-      - name: bin-init-eventlet
-        configMap:
-          name: bin-init-eventlet
-
-
----
-
-
-apiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: nova-conductor
-  labels:
-    chart: nova
-spec:
-  replicas: {{ .Values.replicaCount }}
-  template:
-    metadata:
-      labels:
-        app: nova-conductor
-    spec:
-      containers:
-      - name: nova-conductor
-        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        volumeMounts:
-        - name: etc-nova
-          mountPath: /mnt/etc/nova
-        - name: bin-nova
-          mountPath: /mnt/bin/nova
-        - name: bin-init-eventlet
-          mountPath: /mnt/bin/init-eventlet
-        env:
-        - name: START_CMD
-          value: '/opt/nova/bin/nova-conductor --config-file /etc/nova/nova.conf'
-        - name: WATCH_FILES
-          value: '/mnt/etc/nova/nova.conf'
-      volumes:
-      - name: etc-nova
-        configMap:
-          name: etc-nova
-      - name: bin-nova
-        configMap:
-          name: bin-nova
-      - name: bin-init-eventlet
-        configMap:
-          name: bin-init-eventlet

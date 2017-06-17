@@ -22,7 +22,7 @@ spec:
           - name: admin
             containerPort: 35357
         volumeMounts:
-          - name: keystone-nginx-conf
+          - name: etc-keystone-nginx-conf
             mountPath: /etc/nginx/conf.d
       - name: keystone-public
         command: [
@@ -35,7 +35,7 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
-          - name: keystone-etc
+          - name: etc-keystone
             mountPath: /etc/keystone
       - name: keystone-admin
         command: [
@@ -48,12 +48,12 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
-          - name: keystone-etc
+          - name: etc-keystone
             mountPath: /etc/keystone
       volumes:
-      - name: keystone-nginx-conf
+      - name: etc-keystone-nginx-conf
         configMap:
-          name: keystone-nginx-conf
-      - name: keystone-etc
+          name: etc-keystone-nginx-conf
+      - name: etc-keystone
         configMap:
-          name: keystone-etc
+          name: etc-keystone

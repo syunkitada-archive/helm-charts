@@ -13,6 +13,12 @@ spec:
       hostNetwork: true
       containers:
       - name: nova-compute
+        lifecycle:
+          postStart:
+            exec:
+              command: [
+                "echo", "hello"
+              ]
         command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
         # command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -21,34 +27,13 @@ spec:
           privileged: true
         volumeMounts:
         - name: etc-nova
-          mountPath: /mnt/etc/nova
-        - name: etc-common
-          mountPath: /etc/resolv.conf
-          subPath: resolv.conf
-        - name: bin-nova
-          mountPath: /mnt/bin/nova
-        - name: bin-init-eventlet
-          mountPath: /mnt/bin/init-eventlet
+          mountPath: /etc/nova
         - name: host
           mountPath: /host/
-        env:
-        - name: START_CMD
-          value: '/opt/nova/bin/nova-compute --config-file /etc/nova/nova.conf'
-        - name: WATCH_FILES
-          value: '/mnt/etc/nova/nova.conf'
       volumes:
       - name: etc-nova
         configMap:
           name: etc-nova
-      - name: etc-common
-        configMap:
-          name: etc-common
-      - name: bin-nova
-        configMap:
-          name: bin-nova
-      - name: bin-init-eventlet
-        configMap:
-          name: bin-init-eventlet
       - name: host
         hostPath:
           path: /

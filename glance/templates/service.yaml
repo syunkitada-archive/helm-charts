@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: glance-api
+  name: glance
   labels:
     chart: glance
 spec:
@@ -11,25 +11,9 @@ spec:
     targetPort: 9292
     protocol: TCP
     name: glance-api
-  selector:
-    app: glance-api
-
-
----
-
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: glance-registry
-  labels:
-    chart: glance
-spec:
-  type: ClusterIP
-  ports:
   - port: 9191
     targetPort: 9191
     protocol: TCP
     name: glance-registry
   selector:
-    app: glance-registry
+    app: glance

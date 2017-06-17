@@ -1,0 +1,32 @@
+{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-horizon
+data:
+  local_settings.py: |+
+{{ tuple "etc/horizon/_local_settings.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-horizon-nginx-conf
+data:
+  nginx-horizon.conf: |+
+{{ tuple "etc/horizon/_nginx.conf.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-horizon
+data:
+  start.sh: |+
+{{ tuple "bin/horizon/_start.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

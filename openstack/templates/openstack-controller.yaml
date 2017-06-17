@@ -1,0 +1,73 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: openstack-controller
+  labels:
+    chart: openstack
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      name: openstack-controller
+      labels:
+        chart: openstack
+    spec:
+      containers:
+      - name: openstack-controller
+        command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - name: etc-common
+          mountPath: /etc/common
+        - name: etc-keystone
+          mountPath: /etc/keystone
+        - name: etc-glance
+          mountPath: /etc/glance
+        - name: etc-neutron
+          mountPath: /etc/neutron
+        - name: etc-nova
+          mountPath: /etc/nova
+        - name: bin-neutron
+          mountPath: /mnt/neutron/bin
+        - name: bin-keystone
+          mountPath: /mnt/keystone/bin
+        - name: bin-glance
+          mountPath: /mnt/glance/bin
+        - name: bin-nova
+          mountPath: /mnt/nova/bin
+        env:
+        - name: WATCH_INTERVAL
+          value: '10'
+      volumes:
+      - name: etc-common
+        configMap:
+          name: etc-common
+      - name: etc-keystone
+        configMap:
+          name: etc-keystone
+      - name: etc-glance
+        configMap:
+          name: etc-glance
+      - name: etc-neutron
+        configMap:
+          name: etc-neutron
+      - name: etc-nova
+        configMap:
+          name: etc-nova
+      - name: bin-keystone
+        configMap:
+          name: bin-keystone
+          defaultMode: 0755
+      - name: bin-glance
+        configMap:
+          name: bin-glance
+          defaultMode: 0755
+      - name: bin-neutron
+        configMap:
+          name: bin-neutron
+          defaultMode: 0755
+      - name: bin-nova
+        configMap:
+          name: bin-nova
+          defaultMode: 0755

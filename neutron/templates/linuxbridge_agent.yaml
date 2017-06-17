@@ -13,45 +13,29 @@ spec:
       hostNetwork: true
       containers:
       - name: neutron-linuxbrige-agent
-        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
+        command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        # command: ["bash", "-c", "python3 /mnt/bin/init-eventlet/init.py"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
           privileged: true
         volumeMounts:
-        - name: etc-neutron
-          mountPath: /mnt/etc/neutron
-        - name: etc-common
-          mountPath: /etc/resolv.conf
-          subPath: resolv.conf
-        - name: bin-neutron
-          mountPath: /mnt/bin/neutron
-        - name: bin-init-eventlet
-          mountPath: /mnt/bin/init-eventlet
+        - name: neutron-etc
+          mountPath: /etc/neutron
+        - name: neutron-plugins-ml2-etc
+          mountPath: /etc/neutron/plugins/ml2
         - name: libmodules
           mountPath: /lib/modules
           readOnly: true
         - name: run
           mountPath: /run
-        env:
-        - name: START_CMD
-          value: '/opt/neutron/bin/neutron-linuxbridge-agent --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini --config-file /etc/neutron/plugins/ml2/linuxbridge_agent.ini'
-        - name: WATCH_FILES
-          value: '/mnt/etc/neutron/neutron.conf,/mnt/etc/neutron/ml2_conf.ini,/mnt/etc/neutron/linuxbridge_agent.ini'
       volumes:
-      - name: etc-neutron
+      - name: neutron-etc
         configMap:
-          name: etc-neutron
-      - name: etc-common
+          name: neutron-etc
+      - name: neutron-plugins-ml2-etc
         configMap:
-          name: etc-common
-      - name: bin-neutron
-        configMap:
-          name: bin-neutron
-      - name: bin-init-eventlet
-        configMap:
-          name: bin-init-eventlet
+          name: neutron-plugins-ml2-etc
       - name: libmodules
         hostPath:
           path: /lib/modules

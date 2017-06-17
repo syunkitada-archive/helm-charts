@@ -12,49 +12,34 @@ spec:
         app: horizon
     spec:
       containers:
-      - name: horizon
-        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-uwsgi/init.py"]
+      - name: nginx
+        command: ["/bin/bash", "-c", "nginx -g 'daemon off;'"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-        - containerPort: 80
+          - name: horizon
+            containerPort: 80
+        volumeMounts:
+          - name: etc-horizon-nginx-conf
+            mountPath: /etc/nginx/conf.d
+      - name: horizon
+        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        command: ["/mnt/bin/horizon/start.sh"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
         - name: etc-horizon
-          mountPath: /mnt/etc/horizon
+          mountPath: /etc/horizon
         - name: bin-horizon
           mountPath: /mnt/bin/horizon
-        - name: bin-init-uwsgi
-          mountPath: /mnt/bin/init-uwsgi
-        - name: etc-nginx
-          mountPath: /mnt/etc/nginx
-        env:
-        - name: IS_DJANGO
-          value: 'True'
-        - name: UWSGI_HOME
-          value: '/opt/horizon'
-        - name: UWSGI_PATH
-          value: '/opt/openstack-tools/bin/uwsgi'
-        - name: UWSGI_FILE
-          value: '/opt/horizon/share/horizon/openstack_dashboard/wsgi/django.wsgi'
-        - name: UWSGI_PROCESSES
-          value: '2'
-        - name: SERVER_PORT
-          value: '80'
-        - name: WATCH_FILES
-          value: '/mnt/etc/horizon/local_settings.py'
-        - name: STATIC_PATH
-          value: '/opt/horizon/share/horizon/static'
       volumes:
-      - name: etc-horizon
-        configMap:
-          name: etc-horizon
-      - name: etc-nginx
-        configMap:
-          name: etc-nginx
       - name: bin-horizon
         configMap:
           name: bin-horizon
-      - name: bin-init-uwsgi
+          defaultMode: 0755
+      - name: etc-horizon
         configMap:
-          name: bin-init-uwsgi
+          name: etc-horizon
+      - name: etc-horizon-nginx-conf
+        configMap:
+          name: etc-horizon-nginx-conf

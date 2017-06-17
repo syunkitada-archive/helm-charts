@@ -1,0 +1,59 @@
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: nova-scheduler
+  labels:
+    chart: nova
+spec:
+  serviceName: nova-scheduler
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: nova-scheduler
+    spec:
+      containers:
+      - name: nova-scheduler
+        command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        # command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - name: etc-nova
+          mountPath: /etc/nova
+      volumes:
+      - name: etc-nova
+        configMap:
+          name: etc-nova
+
+
+---
+
+
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: nova-conductor
+  labels:
+    chart: nova
+spec:
+  serviceName: nova-scheduler
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: nova-conductor
+    spec:
+      containers:
+      - name: nova-conductor
+        command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+        # command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+        - name: etc-nova
+          mountPath: /etc/nova
+      volumes:
+      - name: etc-nova
+        configMap:
+          name: etc-nova

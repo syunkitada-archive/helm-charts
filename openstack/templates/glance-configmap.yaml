@@ -1,0 +1,29 @@
+{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etc-glance
+data:
+  glance-api.conf: |+
+{{ tuple "etc/glance/_glance-api.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  glance-registry.conf: |+
+{{ tuple "etc/glance/_glance-registry.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  glance-api-paste.ini: |+
+{{ tuple "etc/glance/_glance-api-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
+  glance-registry-paste.ini: |+
+{{ tuple "etc/glance/_glance-registry-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
+  policy.json: |+
+{{ tuple "etc/glance/_policy.json.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-glance
+data:
+  bootstrap.sh: |+
+{{ tuple "bin/glance/_bootstrap.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

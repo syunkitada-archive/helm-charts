@@ -31,11 +31,12 @@ helm install stable/memcached --name openstack-cache --set replicaCount=1,memcac
 
 ## Deploy openstack
 ``` deploy openstack-common
-helm install --name openstack-common openstack-common
+helm install --name openstack openstack
 helm install --name keystone keystone
 helm install --name glance glance
 helm install --name neutron neutron
 helm install --name nova nova
+helm install --name horizon horizon
 ```
 
 

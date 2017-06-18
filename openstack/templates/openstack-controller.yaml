@@ -12,12 +12,16 @@ spec:
       labels:
         chart: openstack
     spec:
+      hostNetwork: true
       containers:
       - name: openstack-controller
         command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
+        - name: etc-resolv-conf
+          mountPath: /etc/resolv.conf
+          subPath: resolv.conf
         - name: etc-openstack
           mountPath: /etc/openstack
         - name: etc-keystone
@@ -40,6 +44,9 @@ spec:
         - name: WATCH_INTERVAL
           value: '10'
       volumes:
+      - name: etc-resolv-conf
+        configMap:
+          name: etc-resolv-conf
       - name: etc-openstack
         configMap:
           name: etc-openstack

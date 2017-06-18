@@ -31,7 +31,7 @@ openstack:
       vhost: ''
   database_map:
     common:
-      dbs: [keystone, glance, nova, nova_api, neutron]
+      dbs: [keystone, glance, nova_api, nova_cell0, nova, neutron]
       # host: openstack-db-mariadb.default.svc.cluster.local
       host: openstack-db-mariadb.@domain_suffix
       port: 3306

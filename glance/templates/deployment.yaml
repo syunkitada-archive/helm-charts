@@ -12,7 +12,7 @@ spec:
         app: glance
     spec:
       containers:
-      - name: glance
+      - name: glance-api
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
         command: [
           "/opt/glance/bin/glance-api",
@@ -25,7 +25,7 @@ spec:
         volumeMounts:
           - name: etc-glance
             mountPath: /etc/glance
-      - name: glance-api
+      - name: glance-registry
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
         command: [
           "/opt/glance/bin/glance-registry",

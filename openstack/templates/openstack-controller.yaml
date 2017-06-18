@@ -18,8 +18,8 @@ spec:
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
-        - name: etc-common
-          mountPath: /etc/common
+        - name: etc-openstack
+          mountPath: /etc/openstack
         - name: etc-keystone
           mountPath: /etc/keystone
         - name: etc-glance
@@ -40,9 +40,9 @@ spec:
         - name: WATCH_INTERVAL
           value: '10'
       volumes:
-      - name: etc-common
+      - name: etc-openstack
         configMap:
-          name: etc-common
+          name: etc-openstack
       - name: etc-keystone
         configMap:
           name: etc-keystone

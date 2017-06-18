@@ -6,7 +6,7 @@ metadata:
     chart: nova
 spec:
   serviceName: nova-scheduler
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.nova.scheduler.replicas }}
   template:
     metadata:
       labels:
@@ -15,7 +15,10 @@ spec:
       containers:
       - name: nova-scheduler
         command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        # command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
+        command: [
+          "/opt/nova/bin/nova-scheduler",
+          "--config-file", "/etc/nova/nova.conf"
+        ]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
@@ -37,8 +40,8 @@ metadata:
   labels:
     chart: nova
 spec:
-  serviceName: nova-scheduler
-  replicas: {{ .Values.replicaCount }}
+  serviceName: nova-conductor
+  replicas: {{ .Values.nova.conductor.replicas }}
   template:
     metadata:
       labels:
@@ -46,8 +49,10 @@ spec:
     spec:
       containers:
       - name: nova-conductor
-        command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        # command: ["dumb-init", "--", "/usr/bin/python3", "/mnt/bin/init-eventlet/init.py"]
+        command: [
+          "/opt/nova/bin/nova-conductor",
+          "--config-file", "/etc/nova/nova.conf"
+        ]
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:

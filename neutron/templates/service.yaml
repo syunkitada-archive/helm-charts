@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: neutron
+  name: neutron-server
   labels:
     chart: neutron
 spec:
@@ -10,6 +10,6 @@ spec:
   - port: 9696
     targetPort: 9696
     protocol: TCP
-    name: neutron
+    name: neutron-server
   selector:
-    app: neutron
+    app: neutron-server

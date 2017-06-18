@@ -1,7 +1,7 @@
 # Default values for nova.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-replicaCount: 1
+
 image:
   repository: syunkitada/openstack-all
   tag: stable-ocata
@@ -19,3 +19,11 @@ ingress:
     # - secretName: chart-example-tls
     #   hosts:
     #     - chart-example.local
+
+nova:
+  api:
+    replicas: 1
+  conductor:
+    replicas: 2
+  scheduler:
+    replicas: 2

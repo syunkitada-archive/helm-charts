@@ -42,6 +42,7 @@ helm install stable/memcached --name openstack-cache --set replicaCount=1,memcac
 
 ## Deploy openstack
 ``` deploy openstack-common
+helm install --name ingress ingress
 helm install --name openstack openstack
 helm install --name keystone keystone
 helm install --name glance glance

@@ -1,0 +1,44 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: placement-api
+  labels:
+    chart: nova
+spec:
+  replicas: {{ .Values.nova.api.replicas }}
+  template:
+    metadata:
+      labels:
+        app: placement-api
+    spec:
+      containers:
+      - name: nginx
+        command: ["/bin/bash", "-c", "nginx -g 'daemon off;'"]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - name: placement-api
+            containerPort: 8778
+        volumeMounts:
+          - name: etc-nova-placement-nginx-conf
+            mountPath: /etc/nginx/conf.d
+      - name: placement-api
+        command: [
+          '/opt/openstack-tools/bin/uwsgi',
+          '--socket', '127.0.0.1:8080', '--master',
+          '--home', '/opt/nova',
+          '--wsgi-file', '/opt/nova/bin/nova-placement-api',
+          '--processes', '2', '--threads', '1',
+        ]
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+          - name: etc-nova
+            mountPath: /etc/nova
+      volumes:
+      - name: etc-nova
+        configMap:
+          name: etc-nova
+      - name: etc-nova-placement-nginx-conf
+        configMap:
+          name: etc-nova-placement-nginx-conf

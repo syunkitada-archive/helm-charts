@@ -5,7 +5,7 @@ metadata:
   labels:
     chart: nova
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.nova.api.replicas }}
   template:
     metadata:
       labels:

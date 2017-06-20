@@ -12,6 +12,7 @@ transport_url = rabbit://{{$rpc.user}}:{{$rpc.password}}@{{$rpc.host}}:{{$rpc.po
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 compute_driver = libvirt.LibvirtDriver
+state_path = /var/lib/nova
 
 [api]
 auth_strategy = keystone
@@ -47,6 +48,7 @@ virt_type = qemu
 api_servers = {{$glance.internal_url}}
 
 [neutron]
+os_region_name = {{$keystone.region}}
 url = {{$neutron.internal_url}}
 auth_url = {{$keystone.auth_url}}
 auth_type = password
@@ -59,6 +61,7 @@ service_metadata_proxy = true
 metadata_proxy_shared_secret = METADATA_SECRET
 
 [placement]
+os_region_name = {{$keystone.region}}
 auth_uri = {{$keystone.auth_uri}}
 auth_url = {{$keystone.auth_url}}
 auth_type = password

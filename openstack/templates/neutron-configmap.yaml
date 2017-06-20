@@ -31,5 +31,5 @@ kind: ConfigMap
 metadata:
   name: bin-neutron
 data:
-  bootstrap.sh: |+
-{{ tuple "bin/neutron/_bootstrap.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  syncdb.sh: |+
+{{ tuple "bin/neutron/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

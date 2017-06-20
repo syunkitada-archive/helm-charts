@@ -1,11 +1,16 @@
-# Default values for nova.
+# Default values for ingress.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
-
+replicaCount: 1
 image:
-  repository: syunkitada/openstack-all
-  tag: stable-ocata
+  repository: nginx
+  tag: stable
   pullPolicy: IfNotPresent
+service:
+  name: nginx
+  type: ClusterIP
+  externalPort: 80
+  internalPort: 80
 ingress:
   enabled: false
   # Used to create Ingress record (should used with service.type: ClusterIP).
@@ -19,11 +24,11 @@ ingress:
     # - secretName: chart-example-tls
     #   hosts:
     #     - chart-example.local
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
 
-nova:
-  api:
-    replicas: 1
-  conductor:
-    replicas: 2
-  scheduler:
-    replicas: 2

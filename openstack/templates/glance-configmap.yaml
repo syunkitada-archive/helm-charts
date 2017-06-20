@@ -25,5 +25,5 @@ kind: ConfigMap
 metadata:
   name: bin-glance
 data:
-  bootstrap.sh: |+
-{{ tuple "bin/glance/_bootstrap.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  syncdb.sh: |+
+{{ tuple "bin/glance/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

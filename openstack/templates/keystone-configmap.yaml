@@ -33,5 +33,5 @@ kind: ConfigMap
 metadata:
   name: bin-keystone
 data:
-  bootstrap.sh: |+
-{{ tuple "bin/keystone/_bootstrap.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  syncdb.sh: |+
+{{ tuple "bin/keystone/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

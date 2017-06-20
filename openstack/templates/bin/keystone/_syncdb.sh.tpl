@@ -25,8 +25,7 @@ echo "bootstrap"
   --bootstrap-region-id {{$keystone.region}}
 
 
-source /mnt/common/etc/adminrc
-
+source /etc/openstack/adminrc
 
 # Setup projects
 {{range $project := .Values.openstack.projects}}

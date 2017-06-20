@@ -1,6 +1,17 @@
 # openstack-helm
 
 ## Require
+### Install Helm
+``` bash
+wget https://storage.googleapis.com/kubernetes-helm/helm-v2.4.2-linux-amd64.tar.gz && \
+tar -xf helm-v2.4.2-linux-amd64.tar.gz && \
+sudo mv linux-amd64/helm /usr/local/bin/ && \
+helm init && \
+kubectl create serviceaccount --namespace kube-system tiller && \
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller && \
+kubectl patch deployment tiller-deploy -p'{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' -n kube-system
+```
+
 
 ### mysql
 https://github.com/kubernetes/charts/tree/master/stable/mariadb
@@ -45,11 +56,12 @@ helm install --name horizon horizon
 
 * 各ノードを役割に応じて抽象化しラベルを振る
   * controller, compute, net-node, block-storage, object-storage, database
-* controller
-  * ステートレスなコンピュート群
+* controller nodes
+  * ステートレスなノード群
   * ingress, service, deploymentリソースによりAPIを構成するノード群
-  * 重要でないデータを保存するmemcached, rabbitmqもここにデプロイする
-  * chartごとにcontrollerプロセスを用意し、charのステータスを監視し正常性をコントロールする
+  * Statefullset
+      * nova-scheduler, nova-conductor などのhost名を固定化させるべきものはStatefullsetを利用する
+      * 一時データを保存するmemcached, rabbitmqもStatefullsetでデプロイする
 * compute, net-node, block-storage, object-storage, database
   * ステートフルなノード軍
   * hostnet: true
@@ -59,3 +71,6 @@ helm install --name horizon horizon
   * /hostにchrootし、systemdでサービスを起動する
     * このため、サービスプロセスはkube管轄外となる
   * controllerプロセスでステータスを監視し正常性をコントロールする
+* openstack-controller
+  * configmapの変更をすべてマウントし、変更を検知したらpodの環境変数にhashをセットしてpodの作り直しを促す
+  * podのステータスを監視し正常性をコントロールする

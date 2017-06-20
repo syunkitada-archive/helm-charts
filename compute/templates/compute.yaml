@@ -38,6 +38,11 @@ spec:
               readOnly: true
             - name: var-run-libvirt
               mountPath: /var/run/libvirt
+            - name: host
+              mountPath: /host
+            - name: etc
+              mountPath: /etc/machine-id
+              subPath: machine-id
       volumes:
         - name: etc-resolv-conf
           configMap:
@@ -61,3 +66,9 @@ spec:
         - name: var-run-libvirt
           hostPath:
             path: /var/run/libvirt
+        - name: host
+          hostPath:
+            path: /
+        - name: etc
+          hostPath:
+            path: /etc

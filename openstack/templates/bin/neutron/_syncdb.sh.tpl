@@ -1,4 +1,4 @@
-#!/bin/sh -xe
+#!/bin/bash -xe
 
 /opt/neutron/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/ml2_conf.ini upgrade head
 

@@ -1,4 +1,4 @@
-#!/bin/sh -xe
+#!/bin/bash -xe
 
 /opt/nova/bin/nova-manage api_db sync
 

@@ -13,6 +13,7 @@ use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 compute_driver = libvirt.LibvirtDriver
 state_path = /var/lib/nova
+bindir = /opt/nova/bin
 
 [api]
 auth_strategy = keystone
@@ -34,7 +35,7 @@ connection = mysql+pymysql://{{$db.user}}:{{$db.password}}@{{$db.host}}:{{$db.po
 connection = mysql+pymysql://{{$db.user}}:{{$db.password}}@{{$db.host}}:{{$db.port}}/nova
 
 [vnc]
-enabled = true
+enabled = false
 vncserver_listen = $my_ip
 vncserver_proxyclient_address = $my_ip
 

@@ -13,8 +13,8 @@ spec:
       hostNetwork: true
       containers:
         - name: nova-compute
-          # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-          command: ["/mnt/nova/bin/start-compute.sh"]
+          command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+          # command: ["/mnt/nova/bin/start-compute.sh"]
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
@@ -35,7 +35,6 @@ spec:
               readOnly: true
             - name: usr
               mountPath: /usr/
-              readOnly: true
             - name: var-run-libvirt
               mountPath: /var/run/libvirt
             - name: host
@@ -43,6 +42,11 @@ spec:
             - name: etc
               mountPath: /etc/machine-id
               subPath: machine-id
+            - name: sbin
+              mountPath: /sbin/
+            - name: etc
+              mountPath: /etc/sudoers
+              subPath: sudoers
       volumes:
         - name: etc-resolv-conf
           configMap:
@@ -69,6 +73,12 @@ spec:
         - name: host
           hostPath:
             path: /
+        - name: etc
+          hostPath:
+            path: /etc
+        - name: sbin
+          hostPath:
+            path: /sbin
         - name: etc
           hostPath:
             path: /etc

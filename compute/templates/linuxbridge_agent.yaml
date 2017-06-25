@@ -34,15 +34,14 @@ spec:
               mountPath: /mnt/neutron/bin
             - name: lib
               mountPath: /lib/
-              readOnly: true
             - name: lib64
               mountPath: /lib64/
-              readOnly: true
             - name: usr
               mountPath: /usr/
-              readOnly: true
             - name: var
               mountPath: /var/
+            - name: sbin
+              mountPath: /sbin/
       volumes:
         - name: etc-resolv-conf
           configMap:
@@ -54,6 +53,9 @@ spec:
           configMap:
             name: bin-neutron
             defaultMode: 0755
+        - name: sbin
+          hostPath:
+            path: /sbin
         - name: lib
           hostPath:
             path: /lib

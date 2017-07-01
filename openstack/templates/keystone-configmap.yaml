@@ -1,4 +1,5 @@
-{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 
 apiVersion: v1
 kind: ConfigMap
@@ -6,7 +7,7 @@ metadata:
   name: etc-keystone
 data:
   keystone.conf: |+
-{{ tuple "etc/keystone/_keystone.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "etc/keystone/_keystone.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   keystone-paste.ini: |+
 {{ tuple "etc/keystone/_keystone-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
   policy.json: |+
@@ -34,4 +35,4 @@ metadata:
   name: bin-keystone
 data:
   syncdb.sh: |+
-{{ tuple "bin/keystone/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/keystone/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}

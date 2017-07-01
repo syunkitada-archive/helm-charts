@@ -1,0 +1,42 @@
+{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
+{{- $ingress_vip := .Values.openstack.ingress_vip }}
+{{- range .Values.ingress }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .name }}
+spec:
+  rules:
+  - host: {{ .name }}{{ $ingress_suffix }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ .backend }}
+          servicePort: {{ .port }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}{{ $ingress_suffix }}
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+
+---
+
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: {{ .name }}{{ $ingress_suffix }}
+subsets:
+  - addresses:
+      - ip: {{ $ingress_vip }}
+    ports:
+      - port: 80
+
+---
+{{- end }}

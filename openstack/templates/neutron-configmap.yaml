@@ -1,4 +1,5 @@
-{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 
 apiVersion: v1
 kind: ConfigMap
@@ -6,7 +7,7 @@ metadata:
   name: etc-neutron
 data:
   neutron.conf: |+
-{{ tuple "etc/neutron/_neutron.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "etc/neutron/_neutron.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   api-paste.ini: |+
 {{ tuple "etc/neutron/_api-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
   dhcp_agent.ini: |+
@@ -32,4 +33,4 @@ metadata:
   name: bin-neutron
 data:
   syncdb.sh: |+
-{{ tuple "bin/neutron/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/neutron/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}

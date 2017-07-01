@@ -1,4 +1,5 @@
-{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 
 apiVersion: v1
 kind: ConfigMap
@@ -6,7 +7,7 @@ metadata:
   name: etc-openstack
 data:
   adminrc: |+
-{{ tuple "etc/openstack/_adminrc.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "etc/openstack/_adminrc.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   resolv.conf: |+
 {{ tuple "etc/openstack/_resolv.conf.tpl" . | include "funcs.template" | indent 4 }}
 
@@ -32,9 +33,11 @@ metadata:
   name: bin-openstack
 data:
   util.py: |+
-{{ tuple "bin/openstack/_util.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/openstack/_util.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   start-bootstrap.py: |+
 {{ tuple "bin/openstack/_start-bootstrap.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-00-ingress.sh: |+
+{{ tuple "bin/openstack/bootstrap/_ingress.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-01-mysql.sh: |+
 {{ tuple "bin/openstack/bootstrap/_mysql.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-02-memcached.sh: |+
@@ -42,7 +45,7 @@ data:
   bootstrap-03-rabbitmq.sh: |+
 {{ tuple "bin/openstack/bootstrap/_rabbitmq.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-10-keystone.sh: |+
-{{ tuple "bin/openstack/bootstrap/_keystone.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/openstack/bootstrap/_keystone.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   bootstrap-11-glance.sh: |+
 {{ tuple "bin/openstack/bootstrap/_glance.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-12-nova.sh: |+

@@ -16,7 +16,9 @@ network:
 
 openstack:
   debug: true
-  memcached_servers: openstack-cache-memcache.@domain_suffix:11211
+  ingress_suffix: -ingress
+  ingress_vip: 192.168.122.131
+  memcached_servers: openstack-cache-memcache@domain_suffix:11211
   enable_services:
     - keystone
     - glance
@@ -35,43 +37,43 @@ openstack:
   service_map:
     keystone:
       region: RegionOne
-      public_url: http://keystone.@domain_suffix:5000/v3/
-      internal_url: http://keystone.@domain_suffix:5000/v3/
-      admin_url: http://keystone.@domain_suffix:35357/v3/
-      auth_uri: http://keystone.@domain_suffix:5000
-      auth_url: http://keystone.@domain_suffix:35357
+      public_url: http://keystone-public@ingress_suffix/v3/
+      internal_url: http://keystone-public@ingress_suffix/v3/
+      admin_url: http://keystone-admin@ingress_suffix/v3/
+      auth_uri: http://keystone-public@ingress_suffix
+      auth_url: http://keystone-admin@ingress_suffix
     glance:
       enable: true
       description: "OpenStack Image"
       type: image
       region: RegionOne
-      public_url: http://glance-api.@domain_suffix:9292
-      internal_url: http://glance-api.@domain_suffix:9292
-      admin_url: http://glance-api.@domain_suffix:9292
+      public_url: http://glance-api@ingress_suffix
+      internal_url: http://glance-api@ingress_suffix
+      admin_url: http://glance-api@ingress_suffix
     neutron:
       enable: true
       description: "OpenStack Networking"
       type: network
       region: RegionOne
-      public_url: http://neutron-server.@domain_suffix:9696
-      internal_url: http://neutron-server.@domain_suffix:9696
-      admin_url: http://neutron-server.@domain_suffix:9696
+      public_url: http://neutron-server@ingress_suffix
+      internal_url: http://neutron-server@ingress_suffix
+      admin_url: http://neutron-server@ingress_suffix
     nova:
       enable: true
       description: "OpenStack Compute"
       type: compute
       region: RegionOne
-      public_url: http://nova-api.@domain_suffix:8774/v2.1
-      internal_url: http://nova-api.@domain_suffix:8774/v2.1
-      admin_url: http://nova-api.@domain_suffix:8774/v2.1
+      public_url: http://nova-api@ingress_suffix/v2.1
+      internal_url: http://nova-api@ingress_suffix/v2.1
+      admin_url: http://nova-api@ingress_suffix/v2.1
     placement:
       enable: true
       description: "Placement API"
       type: placement
       region: RegionOne
-      public_url: http://placement-api.@domain_suffix:8778
-      internal_url: http://placement-api.@domain_suffix:8778
-      admin_url: http://placement-api.@domain_suffix:8778
+      public_url: http://placement-api@ingress_suffix
+      internal_url: http://placement-api@ingress_suffix
+      admin_url: http://placement-api@ingress_suffix
 
 keystone:
   default:
@@ -80,13 +82,34 @@ keystone:
     provider: uuid
 
 
+ingress:
+  - name: keystone-public
+    backend: keystone
+    port: 5000
+  - name: keystone-admin
+    backend: keystone
+    port: 35357
+  - name: glance-api
+    backend: glance-api
+    port: 9292
+  - name: neutron-server
+    backend: neutron-server
+    port: 9696
+  - name: nova-api
+    backend: nova-api
+    port: 8774
+  - name: placement-api
+    backend: placement-api
+    port: 8778
+
+
 mysql:
   root_pass: rootpass
   database_map:
     common:
       dbs: [keystone, glance, nova_api, nova_cell0, nova, neutron]
       # host: openstack-db-mariadb.default.svc.cluster.local
-      host: openstack-mysql.@domain_suffix
+      host: openstack-mysql@domain_suffix
       port: 3306
       user: root
       password: rootpass
@@ -95,9 +118,9 @@ mysql:
 rabbitmq:
   connection_map:
     common:
-      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq.@domain_suffix:5672
+      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq@domain_suffix:5672
       user: openstack
       password: openstackpass
-      host: openstack-rpc-rabbitmq.@domain_suffix
+      host: openstack-rpc-rabbitmq@domain_suffix
       port: 5672
       vhost: ''

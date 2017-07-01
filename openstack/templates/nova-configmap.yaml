@@ -1,4 +1,5 @@
-{{- $domain_suffix := print .Release.Namespace ".svc.cluster.local" }}
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 
 apiVersion: v1
 kind: ConfigMap
@@ -6,7 +7,7 @@ metadata:
   name: etc-nova
 data:
   nova.conf: |+
-{{ tuple "etc/nova/_nova.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "etc/nova/_nova.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   api-paste.ini: |+
 {{ tuple "etc/nova/_api-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
   rootwrap.conf: |+
@@ -34,6 +35,6 @@ metadata:
   name: bin-nova
 data:
   syncdb.sh: |+
-{{ tuple "bin/nova/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/nova/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   start-compute.sh: |+
-{{ tuple "bin/nova/_start-compute.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/nova/_start-compute.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}

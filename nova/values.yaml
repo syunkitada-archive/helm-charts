@@ -24,6 +24,6 @@ nova:
   api:
     replicas: 1
   conductor:
-    replicas: 2
+    replicas: 1
   scheduler:
-    replicas: 2
+    replicas: 1

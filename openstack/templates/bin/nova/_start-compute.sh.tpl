@@ -7,7 +7,7 @@ mkdir -p /var/lib/nova/instances
 echo 'Success bootstrap'
 
 [ -e /usr/bin/nova-rootwrap ] || ln -s /opt/nova/bin/nova-rootwrap /usr/bin/
-[ -e /usr/bin/privsep-helper ] || ln -s /opt/nova/bin/nova-rootwrap /usr/bin/
+[ -e /usr/bin/privsep-helper ] || ln -s /opt/nova/bin/privsep-helper /usr/bin/
 chroot /host apt-get install -y qemu libvirt-bin python3-libvirt
 chroot /host systemctl start libvirtd
 

@@ -15,6 +15,7 @@ network:
     - 10.96.0.10
 
 openstack:
+  debug: true
   memcached_servers: openstack-cache-memcache.@domain_suffix:11211
   enable_services:
     - keystone

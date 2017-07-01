@@ -13,8 +13,8 @@ spec:
       hostNetwork: true
       containers:
         - name: nova-compute
-          command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-          # command: ["/mnt/nova/bin/start-compute.sh"]
+          # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+          command: ["/mnt/nova/bin/start-compute.sh"]
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
@@ -44,6 +44,9 @@ spec:
               subPath: machine-id
             - name: sbin
               mountPath: /sbin/
+            - name: etc
+              mountPath: /etc/network
+              subPath: network
             - name: etc
               mountPath: /etc/sudoers
               subPath: sudoers

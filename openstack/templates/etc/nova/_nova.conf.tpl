@@ -1,4 +1,6 @@
 {{- $service_user := .Values.openstack.user_map.service }}
+{{- $openstack := .Values.openstack }}
+{{- $nova := .Values.openstack.service_map.nova }}
 {{- $keystone := .Values.openstack.service_map.keystone }}
 {{- $glance := .Values.openstack.service_map.glance }}
 {{- $neutron := .Values.openstack.service_map.neutron }}
@@ -7,7 +9,7 @@
 {{- $transport_url := .Values.rabbitmq.connection_map.common.transport_url }}
 
 [DEFAULT]
-debug = false
+debug = {{ $openstack.debug | default "false" }}
 transport_url = {{ $transport_url }}
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver

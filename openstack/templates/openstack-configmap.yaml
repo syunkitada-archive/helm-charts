@@ -33,3 +33,25 @@ metadata:
 data:
   adminrc: |+
 {{ tuple "root/_adminrc.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bin-openstack
+data:
+  util.py: |+
+{{ tuple "bin/openstack/_util.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  start-bootstrap.py: |+
+{{ tuple "bin/openstack/_start-bootstrap.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-01-mysql.sh: |+
+{{ tuple "bin/openstack/bootstrap/_mysql.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-02-memcached.sh: |+
+{{ tuple "bin/openstack/bootstrap/_memcached.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-03-rabbitmq.sh: |+
+{{ tuple "bin/openstack/bootstrap/_rabbitmq.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-10-keystone.sh: |+
+{{ tuple "bin/openstack/bootstrap/_keystone.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

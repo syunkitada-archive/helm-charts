@@ -12,6 +12,15 @@ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admi
 kubectl patch deployment tiller-deploy -p'{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' -n kube-system
 ```
 
+kubectl create serviceaccount openstack && \
+kubectl create clusterrolebinding openstack-cluster-rule --clusterrole=cluster-admin --serviceaccount=default:openstack
+
+
+kubectl label nodes kubernetes-ubuntu7-1-hostname openstack-controller=common
+mkdir -p /opt/kubernetes/bin
+cp /usr/local/bin/helm /opt/kubernetes/bin/
+cp /usr/bin/kubectl /opt/kubernetes/bin/
+
 
 ### mysql
 https://github.com/kubernetes/charts/tree/master/stable/mariadb

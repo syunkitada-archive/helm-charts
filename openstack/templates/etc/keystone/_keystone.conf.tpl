@@ -1,4 +1,4 @@
-{{- $db := .Values.openstack.database_map.common }}
+{{- $db := .Values.mysql.database_map.common }}
 [DEFAULT]
 debug = {{.Values.keystone.default.debug | default "false"}}
 

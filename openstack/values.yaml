@@ -29,16 +29,16 @@ openstack:
       host: openstack-rpc-rabbitmq.@domain_suffix
       port: 5672
       vhost: ''
+  admin_password: adminpass
+  projects: [service]
   database_map:
     common:
       dbs: [keystone, glance, nova_api, nova_cell0, nova, neutron]
       # host: openstack-db-mariadb.default.svc.cluster.local
-      host: openstack-db-mariadb.@domain_suffix
+      host: openstack-mysql.@domain_suffix
       port: 3306
       user: root
       password: rootpass
-  admin_password: adminpass
-  projects: [service]
   user_map:
     service:
       user: openstack
@@ -92,3 +92,15 @@ keystone:
     debug: true
   token:
     provider: uuid
+
+
+mysql:
+  root_pass: rootpass
+  database_map:
+    common:
+      dbs: [keystone, glance, nova_api, nova_cell0, nova, neutron]
+      # host: openstack-db-mariadb.default.svc.cluster.local
+      host: openstack-mysql.@domain_suffix
+      port: 3306
+      user: root
+      password: rootpass

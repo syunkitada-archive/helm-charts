@@ -29,18 +29,6 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: root-home
-data:
-  adminrc: |+
-{{ tuple "root/_adminrc.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
-
-
----
-
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: bin-openstack
 data:
   util.py: |+
@@ -55,3 +43,13 @@ data:
 {{ tuple "bin/openstack/bootstrap/_rabbitmq.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-10-keystone.sh: |+
 {{ tuple "bin/openstack/bootstrap/_keystone.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-11-glance.sh: |+
+{{ tuple "bin/openstack/bootstrap/_glance.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-12-nova.sh: |+
+{{ tuple "bin/openstack/bootstrap/_nova.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-13-neutron.sh: |+
+{{ tuple "bin/openstack/bootstrap/_neutron.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-20-horizon.sh: |+
+{{ tuple "bin/openstack/bootstrap/_horizon.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  bootstrap-50-compute.sh: |+
+{{ tuple "bin/openstack/bootstrap/_compute.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

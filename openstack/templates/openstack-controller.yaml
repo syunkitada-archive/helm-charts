@@ -47,14 +47,6 @@ spec:
               mountPath: /etc/neutron
             - name: etc-nova
               mountPath: /etc/nova
-            - name: bin-neutron
-              mountPath: /mnt/neutron/bin
-            - name: bin-keystone
-              mountPath: /mnt/keystone/bin
-            - name: bin-glance
-              mountPath: /mnt/glance/bin
-            - name: bin-nova
-              mountPath: /mnt/nova/bin
           env:
             - name: WATCH_INTERVAL
               value: '10'
@@ -87,19 +79,3 @@ spec:
         - name: etc-nova
           configMap:
             name: etc-nova
-        - name: bin-keystone
-          configMap:
-            name: bin-keystone
-            defaultMode: 0755
-        - name: bin-glance
-          configMap:
-            name: bin-glance
-            defaultMode: 0755
-        - name: bin-neutron
-          configMap:
-            name: bin-neutron
-            defaultMode: 0755
-        - name: bin-nova
-          configMap:
-            name: bin-nova
-            defaultMode: 0755

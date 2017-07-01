@@ -6,7 +6,7 @@
 
 /opt/kubernetes/bin/helm get openstack-keystone \
     || /opt/kubernetes/bin/helm install /opt/openstack-helm/keystone \
-        --name openstack-keystone \
+        --name openstack-keystone
 
 echo "db_sync"
 /opt/keystone/bin/keystone-manage db_sync

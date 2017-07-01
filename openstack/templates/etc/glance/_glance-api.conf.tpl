@@ -1,6 +1,6 @@
 {{$service_user := .Values.openstack.user_map.service}}
 {{$keystone := .Values.openstack.service_map.keystone}}
-{{$db := .Values.openstack.database_map.common}}
+{{$db := .Values.mysql.database_map.common}}
 [DEFAULT]
 debug = true
 workers = 2

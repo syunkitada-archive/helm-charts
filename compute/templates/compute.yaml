@@ -79,6 +79,3 @@ spec:
         - name: sbin
           hostPath:
             path: /sbin
-        - name: etc
-          hostPath:
-            path: /etc

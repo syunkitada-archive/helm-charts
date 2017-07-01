@@ -1,7 +1,7 @@
-{{$service_user := .Values.openstack.user_map.service}}
-{{$keystone := .Values.openstack.service_map.keystone}}
-{{$db := .Values.openstack.database_map.common}}
-{{$rpc := .Values.openstack.rpc_map.common}}
+{{- $service_user := .Values.openstack.user_map.service }}
+{{- $keystone := .Values.openstack.service_map.keystone }}
+{{- $db := .Values.mysql.database_map.common }}
+{{- $transport_url := .Values.rabbitmq.connection_map.common.transport_url }}
 
 [DEFAULT]
 debug = true
@@ -10,7 +10,7 @@ service_plugins =
 auth_strategy = keystone
 notify_nova_on_port_status_changes = true
 notify_nova_on_port_data_changes = true
-transport_url = rabbit://{{$rpc.user}}:{{$rpc.password}}@{{$rpc.host}}:{{$rpc.port}}{{$rpc.vhost}}
+transport_url = {{ $transport_url }}
 
 api_workers = 2
 rpc_workers = 1

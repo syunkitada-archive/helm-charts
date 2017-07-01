@@ -1,14 +1,14 @@
-{{- $service_user := .Values.openstack.user_map.service}}
-{{- $keystone := .Values.openstack.service_map.keystone}}
-{{- $glance := .Values.openstack.service_map.glance}}
-{{- $neutron := .Values.openstack.service_map.neutron}}
-{{- $placement := .Values.openstack.service_map.placement}}
-{{- $db := .Values.openstack.database_map.common}}
-{{- $rpc := .Values.openstack.rpc_map.common}}
+{{- $service_user := .Values.openstack.user_map.service }}
+{{- $keystone := .Values.openstack.service_map.keystone }}
+{{- $glance := .Values.openstack.service_map.glance }}
+{{- $neutron := .Values.openstack.service_map.neutron }}
+{{- $placement := .Values.openstack.service_map.placement }}
+{{- $db := .Values.mysql.database_map.common }}
+{{- $transport_url := .Values.rabbitmq.connection_map.common.transport_url }}
 
 [DEFAULT]
 debug = false
-transport_url = rabbit://{{$rpc.user}}:{{$rpc.password}}@{{$rpc.host}}:{{$rpc.port}}{{$rpc.vhost}}
+transport_url = {{ $transport_url }}
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 compute_driver = libvirt.LibvirtDriver

@@ -22,23 +22,8 @@ openstack:
     - nova
     - nova_api
     - neutron
-  rpc_map:
-    common:
-      user: openstack
-      password: openstackpass
-      host: openstack-rpc-rabbitmq.@domain_suffix
-      port: 5672
-      vhost: ''
   admin_password: adminpass
   projects: [service]
-  database_map:
-    common:
-      dbs: [keystone, glance, nova_api, nova_cell0, nova, neutron]
-      # host: openstack-db-mariadb.default.svc.cluster.local
-      host: openstack-mysql.@domain_suffix
-      port: 3306
-      user: root
-      password: rootpass
   user_map:
     service:
       user: openstack
@@ -104,3 +89,14 @@ mysql:
       port: 3306
       user: root
       password: rootpass
+
+
+rabbitmq:
+  connection_map:
+    common:
+      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq.@domain_suffix:5672
+      user: openstack
+      password: openstackpass
+      host: openstack-rpc-rabbitmq.@domain_suffix
+      port: 5672
+      vhost: ''

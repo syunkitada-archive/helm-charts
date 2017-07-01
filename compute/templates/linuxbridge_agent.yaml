@@ -11,6 +11,8 @@ spec:
         app: neutron-linuxbridge-agent
     spec:
       hostNetwork: true
+      nodeSelector:
+        openstack-compute: ""
       containers:
         - name: neutron-linuxbrige-agent
           # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]

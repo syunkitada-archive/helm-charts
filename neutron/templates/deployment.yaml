@@ -11,6 +11,8 @@ spec:
       labels:
         app: neutron-server
     spec:
+      nodeSelector:
+        openstack-controller: ""
       containers:
       - name: neutron-server
         # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]

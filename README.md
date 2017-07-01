@@ -16,7 +16,8 @@ kubectl create serviceaccount openstack && \
 kubectl create clusterrolebinding openstack-cluster-rule --clusterrole=cluster-admin --serviceaccount=default:openstack
 
 
-kubectl label nodes kubernetes-ubuntu7-1-hostname openstack-controller=common
+kubectl label nodes kubernetes-ubuntu7-2-hostname openstack-controller=
+kubectl label nodes kubernetes-ubuntu7-3-hostname openstack-compute=
 mkdir -p /opt/kubernetes/bin
 cp /usr/local/bin/helm /opt/kubernetes/bin/
 cp /usr/bin/kubectl /opt/kubernetes/bin/

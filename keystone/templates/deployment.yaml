@@ -11,6 +11,8 @@ spec:
       labels:
         app: keystone
     spec:
+      nodeSelector:
+        openstack-controller: ""
       containers:
       - name: nginx
         command: ["/bin/bash", "-c", "nginx -g 'daemon off;'"]

@@ -31,6 +31,8 @@ spec:
             }
           ]'
     spec:
+      nodeSelector:
+        openstack-controller: ""
       containers:
       - name: {{ template "fullname" . }}
         image: "{{ .Values.image }}"

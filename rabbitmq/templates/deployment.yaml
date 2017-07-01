@@ -13,6 +13,8 @@ spec:
       labels:
         app: {{ template "fullname" . }}
     spec:
+      nodeSelector:
+        openstack-controller: ""
       containers:
       - name: {{ template "fullname" . }}
         image: "{{ .Values.image }}"

@@ -11,6 +11,8 @@ spec:
         app: nova-compute
     spec:
       hostNetwork: true
+      nodeSelector:
+        openstack-compute: ""
       containers:
         - name: nova-compute
           # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]

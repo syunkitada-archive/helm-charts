@@ -18,6 +18,8 @@ spec:
         release: "{{ .Release.Name }}"
         heritage: "{{ .Release.Service }}"
     spec:
+      nodeSelector:
+        openstack-controller: ""
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

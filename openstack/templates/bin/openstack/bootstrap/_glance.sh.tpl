@@ -13,7 +13,9 @@
 source /etc/openstack/adminrc
 
 cd /tmp/
-openstack image show cirros \
+image_list=`openstack image list`
+
+echo $image_list | grep cirros \
     || ( \
 curl -O http://download.cirros-cloud.net/0.3.5/cirros-0.3.5-x86_64-disk.img; \
 openstack image create "cirros" \

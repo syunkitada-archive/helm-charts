@@ -10,8 +10,7 @@ spec:
   - host: {{ .name }}{{ $ingress_suffix }}
     http:
       paths:
-      - path: /
-        backend:
+      - backend:
           serviceName: {{ .backend }}
           servicePort: {{ .port }}
 

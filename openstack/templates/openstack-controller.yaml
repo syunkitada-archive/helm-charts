@@ -23,8 +23,8 @@ spec:
         node-role.kubernetes.io/master: ""
       containers:
         - name: openstack-controller
-          # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-          command: ["/mnt/bin/openstack/start-bootstrap.py"]
+          command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+          # command: ["/mnt/bin/openstack/start-bootstrap.py"]
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:

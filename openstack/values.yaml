@@ -101,6 +101,9 @@ ingress:
   - name: placement-api
     backend: placement-api
     port: 8778
+  - name: horizon
+    backend: horizon
+    port: 8000
 
 
 mysql:

@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
           - name: horizon
-            containerPort: 80
+            containerPort: 8000
         volumeMounts:
           - name: etc-horizon-nginx-conf
             mountPath: /etc/nginx/conf.d

@@ -1,12 +1,16 @@
 #!/bin/bash -xe
 
+source /mnt/openstack/etc/adminrc
+
+helm get values openstack > /tmp/values.yaml
 helm get openstack-glance \
     || helm install /opt/openstack-helm/glance \
-        --name openstack-glance
+        --name openstack-glance -f /tmp/values.yaml
+
+kubectl get cm glance-etc -o jsonpath='{.data.glance-api\.conf}' > /etc/glance/glance-api.conf
 
 /opt/glance/bin/glance-manage db_sync
 
-source /etc/openstack/adminrc
 
 cd /tmp/
 image_list=`openstack image list`

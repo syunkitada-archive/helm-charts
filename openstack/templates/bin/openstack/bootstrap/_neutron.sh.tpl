@@ -1,14 +1,16 @@
 #!/bin/bash -xe
 
+source /mnt/openstack/etc/adminrc
+
+helm get values openstack > /tmp/values.yaml
 helm get openstack-neutron \
     || helm install /opt/openstack-helm/neutron \
-        --name openstack-neutron
+        --name openstack-neutron -f /tmp/values.yaml
 
+kubectl get cm neutron-etc -o jsonpath='{.data.neutron\.conf}' > /etc/neutron/neutron.conf
 
-/opt/neutron/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/ml2_conf.ini upgrade head
+/opt/neutron/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf upgrade head
 
-
-source /etc/openstack/adminrc
 
 openstack network show local-net \
   || openstack network create local-net

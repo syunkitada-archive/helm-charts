@@ -1,21 +1,12 @@
-{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
-{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: etc-glance
+  name: glance-etc
 data:
   glance-api.conf: |+
-{{ tuple "etc/glance/_glance-api.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
+{{ tuple "etc/_glance-api.conf.tpl" . | include "funcs.template" | indent 4 }}
   glance-registry.conf: |+
-{{ tuple "etc/glance/_glance-registry.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
-  glance-api-paste.ini: |+
-{{ tuple "etc/glance/_glance-api-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
-  glance-registry-paste.ini: |+
-{{ tuple "etc/glance/_glance-registry-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
-  policy.json: |+
-{{ tuple "etc/glance/_policy.json.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_glance-registry.conf.tpl" . | include "funcs.template" | indent 4 }}
 
 
 ---
@@ -24,7 +15,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: bin-glance
+  name: glance-bin
 data:
-  syncdb.sh: |+
-{{ tuple "bin/glance/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
+  glance.sh: |+
+{{ tuple "bin/_glance.sh.tpl" . | include "funcs.template" | indent 4 }}

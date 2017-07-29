@@ -1,7 +1,7 @@
 chart:
   keystone:
-    replicaCount: 1
+    replica_count: 1
     image:
       repository: syunkitada/centos7-openstack-all
       tag: pike
-      pullPolicy: Always
+      pull_policy: Always

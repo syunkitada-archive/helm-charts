@@ -6,7 +6,7 @@ metadata:
   labels:
     chart: keystone
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ $keystone.replica_count }}
   template:
     metadata:
       labels:
@@ -14,13 +14,14 @@ spec:
       annotations:
         keystone-configmap: {{ tuple "keystone-configmap.yaml" . | include "funcs.hash" }}
     spec:
+      serviceAccount: openstack
       nodeSelector:
         openstack-controller: ""
       containers:
         - name: nginx
           command: ["/mnt/keystone/bin/keystone.sh", "start_nginx"]
           image: "{{ $keystone.image.repository }}:{{ $keystone.image.tag }}"
-          imagePullPolicy: {{ $keystone.image.pullPolicy }}
+          imagePullPolicy: {{ $keystone.image.pull_policy }}
           ports:
             - name: public
               containerPort: 5000
@@ -36,7 +37,7 @@ spec:
         - name: keystone-public
           command: ["/mnt/keystone/bin/keystone.sh", "start_public"]
           image: "{{ $keystone.image.repository }}:{{ $keystone.image.tag }}"
-          imagePullPolicy: {{ $keystone.image.pullPolicy }}
+          imagePullPolicy: {{ $keystone.image.pull_policy }}
           volumeMounts:
             - name: keystone-bin
               mountPath: /mnt/keystone/bin
@@ -49,7 +50,7 @@ spec:
         - name: keystone-admin
           command: ["/mnt/keystone/bin/keystone.sh", "start_admin"]
           image: "{{ $keystone.image.repository }}:{{ $keystone.image.tag }}"
-          imagePullPolicy: {{ $keystone.image.pullPolicy }}
+          imagePullPolicy: {{ $keystone.image.pull_policy }}
           volumeMounts:
             - name: keystone-bin
               mountPath: /mnt/keystone/bin

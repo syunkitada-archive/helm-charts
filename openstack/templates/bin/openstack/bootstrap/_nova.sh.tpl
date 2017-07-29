@@ -1,8 +1,13 @@
 #!/bin/bash -xe
 
+source /mnt/openstack/etc/adminrc
+
+helm get values openstack > /tmp/values.yaml
 helm get openstack-nova \
     || helm install /opt/openstack-helm/nova \
-        --name openstack-nova
+        --name openstack-nova -f /tmp/values.yaml
+
+kubectl get cm nova-etc -o jsonpath='{.data.nova\.conf}' > /etc/nova/nova.conf
 
 /opt/nova/bin/nova-manage api_db sync
 
@@ -11,6 +16,5 @@ helm get openstack-nova \
 /opt/nova/bin/nova-manage db sync
 
 
-source /etc/openstack/adminrc
 openstack flavor show 1v-512M-4G \
   || openstack flavor create --vcpus 1 --ram 512 --disk 4 --public 1v-512M-4G

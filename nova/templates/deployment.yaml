@@ -11,6 +11,7 @@ spec:
       labels:
         app: nova-api
     spec:
+      serviceAccount: openstack
       nodeSelector:
         openstack-controller: ""
       containers:

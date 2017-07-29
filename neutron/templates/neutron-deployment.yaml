@@ -1,0 +1,51 @@
+{{- $neutron := .Values.chart.neutron }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: neutron
+  labels:
+    chart: neutron
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: neutron
+      annotations:
+        neutron-configmap: {{ tuple "neutron-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      serviceAccount: openstack
+      nodeSelector:
+        openstack-controller: ""
+      containers:
+        - name: neutron
+          command: ["/mnt/neutron/bin/neutron.sh", "start"]
+          image: "{{ $neutron.image.repository }}:{{ $neutron.image.tag }}"
+          imagePullPolicy: {{ $neutron.image.pull_policy }}
+          readinessProbe:
+            timeoutSeconds: {{ $neutron.probes_timeout }}
+            exec:
+              command: ["/mnt/neutron/bin/neutron.sh", "readiness"]
+          livenessProbe:
+            initialDelaySeconds: {{ $neutron.probes_delay }}
+            timeoutSeconds: {{ $neutron.probes_timeout }}
+            exec:
+              command: ["/mnt/neutron/bin/neutron.sh", "liveness"]
+          volumeMounts:
+            - name: neutron-bin
+              mountPath: /mnt/neutron/bin
+            - name: neutron-etc
+              mountPath: /mnt/neutron/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+      volumes:
+        - name: neutron-bin
+          configMap:
+            name: neutron-bin
+            defaultMode: 0755
+        - name: neutron-etc
+          configMap:
+            name: neutron-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

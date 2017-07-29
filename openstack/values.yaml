@@ -1,18 +1,9 @@
-# Default values for openstack-common.
-
 replicaCount: 1
 image:
   repository: syunkitada/centos7-openstack-all
   tag: pike
   pullPolicy: Always
 
-network:
-  dns:
-    kubernetes_domain: cluster.local
-    # this must list the skydns server first, and in calico
-    # this is consistently 10.96.0.10
-    servers:
-    - 10.96.0.10
 
 openstack:
   debug: true

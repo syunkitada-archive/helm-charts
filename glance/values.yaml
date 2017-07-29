@@ -1,21 +1,9 @@
-# Default values for glance.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-replicaCount: 1
-image:
-  repository: syunkitada/centos7-openstack-all
-  tag: pike
-  pullPolicy: IfNotPresent
-ingress:
-  enabled: false
-  # Used to create Ingress record (should used with service.type: ClusterIP).
-  hosts:
-    - chart-example.local
-  annotations:
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  tls:
-    # Secrets must be manually created in the namespace.
-    # - secretName: chart-example-tls
-    #   hosts:
-    #     - chart-example.local
+chart:
+  glance:
+    replica_count: 1
+    probes_delay: 30
+    probes_timeout: 30
+    image:
+      repository: syunkitada/centos7-openstack-all
+      tag: pike
+      pullPolicy: Always

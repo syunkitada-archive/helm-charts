@@ -1,0 +1,75 @@
+{{- $glance := .Values.chart.glance }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: glance
+  labels:
+    chart: glance
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: glance
+      annotations:
+        glance-configmap: {{ tuple "glance-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      serviceAccount: openstack
+      nodeSelector:
+        openstack-controller: ""
+      containers:
+        - name: glance-api
+          command: ["/mnt/glance/bin/glance.sh", "start_api"]
+          image: "{{ $glance.image.repository }}:{{ $glance.image.tag }}"
+          imagePullPolicy: {{ $glance.image.pull_policy }}
+          ports:
+            - containerPort: 9292
+          readinessProbe:
+            timeoutSeconds: {{ $glance.probes_timeout }}
+            exec:
+              command: ["/mnt/glance/bin/glance.sh", "readiness_api"]
+          livenessProbe:
+            initialDelaySeconds: {{ $glance.probes_delay }}
+            timeoutSeconds: {{ $glance.probes_timeout }}
+            exec:
+              command: ["/mnt/glance/bin/glance.sh", "liveness_api"]
+          volumeMounts:
+            - name: glance-bin
+              mountPath: /mnt/glance/bin
+            - name: glance-etc
+              mountPath: /mnt/glance/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+        - name: glance-registry
+          command: ["/mnt/glance/bin/glance.sh", "start_registry"]
+          image: "{{ $glance.image.repository }}:{{ $glance.image.tag }}"
+          imagePullPolicy: {{ $glance.image.pull_policy }}
+          ports:
+            - containerPort: 9191
+          readinessProbe:
+            timeoutSeconds: {{ $glance.probes_timeout }}
+            exec:
+              command: ["/mnt/glance/bin/glance.sh", "readiness_registry"]
+          livenessProbe:
+            initialDelaySeconds: {{ $glance.probes_delay }}
+            timeoutSeconds: {{ $glance.probes_timeout }}
+            exec:
+              command: ["/mnt/glance/bin/glance.sh", "liveness_registry"]
+          volumeMounts:
+            - name: glance-bin
+              mountPath: /mnt/glance/bin
+            - name: glance-etc
+              mountPath: /mnt/glance/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+      volumes:
+        - name: glance-bin
+          configMap:
+            name: glance-bin
+            defaultMode: 0755
+        - name: glance-etc
+          configMap:
+            name: glance-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

@@ -72,7 +72,7 @@ mysql:
 rabbitmq:
   connection_map:
     common:
-      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq@domain_suffix:5672
+      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq.default.svc.cluster.local:5672
       user: openstack
       password: openstackpass
       host: openstack-rabbitmq.default.svc.cluster.local

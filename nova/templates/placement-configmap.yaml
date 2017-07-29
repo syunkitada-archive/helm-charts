@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: placement-etc
+data:
+  nginx-placement.conf: |+
+{{ tuple "etc/nova/_nginx-placement.conf.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: placement-bin
+data:
+  placement.sh: |+
+{{ tuple "bin/_placement.sh.tpl" . | include "funcs.template" | indent 4 }}

@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nova-api
+  name: nova
   labels:
     chart: nova
 spec:
   type: ClusterIP
   ports:
-  - port: 8774
-    targetPort: 8774
-    protocol: TCP
-    name: nova-api
+    - port: 8774
+      targetPort: 8774
+      protocol: TCP
+      name: nova-api
   selector:
     app: nova-api
 
@@ -21,15 +21,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: placement-api
+  name: placement
   labels:
     chart: nova
 spec:
   type: ClusterIP
   ports:
-  - port: 8778
-    targetPort: 8778
-    protocol: TCP
-    name: placement-api
+    - port: 8778
+      targetPort: 8778
+      protocol: TCP
+      name: placement
   selector:
-    app: placement-api
+    app: placement

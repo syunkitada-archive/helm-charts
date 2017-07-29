@@ -1,17 +1,10 @@
-{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
-{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: etc-nova
+  name: nova-etc
 data:
   nova.conf: |+
-{{ tuple "etc/nova/_nova.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
-  api-paste.ini: |+
-{{ tuple "etc/nova/_api-paste.ini.tpl" . | include "funcs.template" | indent 4 }}
-  rootwrap.conf: |+
-{{ tuple "etc/nova/_rootwrap.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_nova.conf.tpl" . | include "funcs.template" | indent 4 }}
 
 
 ---
@@ -20,21 +13,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: etc-nova-placement-nginx-conf
+  name: nova-bin
 data:
-  nova-placement-nginx.conf: |+
-{{ tuple "etc/nova/_nova-placement-nginx.conf.tpl" . | include "funcs.template" | indent 4 }}
-
-
----
-
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: bin-nova
-data:
-  syncdb.sh: |+
-{{ tuple "bin/nova/_syncdb.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
-  start-compute.sh: |+
-{{ tuple "bin/nova/_start-compute.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
+  nova.sh: |+
+{{ tuple "bin/_nova.sh.tpl" . | include "funcs.template" | indent 4 }}

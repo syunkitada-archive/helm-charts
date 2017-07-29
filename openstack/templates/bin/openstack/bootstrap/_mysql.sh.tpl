@@ -1,12 +1,10 @@
 #!/bin/bash -xe
 {{$mysql := .Values.mysql}}
-{{$keystone := .Values.openstack.service_map.keystone}}
-{{$glance := .Values.openstack.service_map.glance}}
 {{$admin_password := .Values.openstack.admin_password}}
 
 
-/opt/kubernetes/bin/helm get openstack-mysql \
-    || /opt/kubernetes/bin/helm install /opt/openstack-helm/mariadb \
+helm get openstack-mysql \
+    || helm install /opt/openstack-helm/mariadb \
         --name openstack-mysql \
         --set persistence.enabled=false,mariadbRootPassword={{ $mysql.root_pass }}
 

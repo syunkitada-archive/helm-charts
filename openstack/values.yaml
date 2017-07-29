@@ -2,9 +2,9 @@
 
 replicaCount: 1
 image:
-  repository: syunkitada/openstack-all
-  tag: stable-ocata
-  pullPolicy: IfNotPresent
+  repository: syunkitada/centos7-openstack-all
+  tag: pike
+  pullPolicy: Always
 
 network:
   dns:
@@ -16,15 +16,13 @@ network:
 
 openstack:
   debug: true
-  ingress_suffix: -ingress
-  ingress_vip: 192.168.122.132
+  region: RegionOne
+  http_protocol: https
+  ingress_suffix: .k8s.example.com
+  ingress_vip: 172.16.100.132
+  ingress_tls: tls-ingress
   memcached_servers: openstack-cache-memcache@domain_suffix:11211
-  enable_services:
-    - keystone
-    - glance
-    - nova
-    - nova_api
-    - neutron
+  enable_services: [keystone, glance, nova, neutron]
   admin_password: adminpass
   projects: [service]
   user_map:
@@ -34,74 +32,37 @@ openstack:
       domain: default
       project: service
       role: admin
-  service_map:
-    keystone:
-      region: RegionOne
-      public_url: http://keystone-public@ingress_suffix/v3/
-      internal_url: http://keystone-public@ingress_suffix/v3/
-      admin_url: http://keystone-admin@ingress_suffix/v3/
-      auth_uri: http://keystone-public@ingress_suffix
-      auth_url: http://keystone-admin@ingress_suffix
-    glance:
-      enable: true
-      description: "OpenStack Image"
-      type: image
-      region: RegionOne
-      public_url: http://glance-api@ingress_suffix
-      internal_url: http://glance-api@ingress_suffix
-      admin_url: http://glance-api@ingress_suffix
-    neutron:
-      enable: true
-      description: "OpenStack Networking"
-      type: network
-      region: RegionOne
-      public_url: http://neutron-server@ingress_suffix
-      internal_url: http://neutron-server@ingress_suffix
-      admin_url: http://neutron-server@ingress_suffix
-    nova:
-      enable: true
-      description: "OpenStack Compute"
-      type: compute
-      region: RegionOne
-      public_url: http://nova-api@ingress_suffix/v2.1
-      internal_url: http://nova-api@ingress_suffix/v2.1
-      admin_url: http://nova-api@ingress_suffix/v2.1
-    placement:
-      enable: true
-      description: "Placement API"
-      type: placement
-      region: RegionOne
-      public_url: http://placement-api@ingress_suffix
-      internal_url: http://placement-api@ingress_suffix
-      admin_url: http://placement-api@ingress_suffix
-
-keystone:
-  default:
-    debug: true
-  token:
-    provider: uuid
+  keystone:
+    token: {}
 
 
 ingress:
-  - name: keystone-public
+  keystone_public:
+    name: keystone-public
     backend: keystone
     port: 5000
-  - name: keystone-admin
+  keystone_admin:
+    name: keystone-admin
     backend: keystone
     port: 35357
-  - name: glance-api
-    backend: glance-api
+  glance:
+    name: glance
+    backend: glance
     port: 9292
-  - name: neutron-server
-    backend: neutron-server
+  neutron:
+    name: neutron
+    backend: neutron
     port: 9696
-  - name: nova-api
-    backend: nova-api
+  nova:
+    name: nova
+    backend: nova
     port: 8774
-  - name: placement-api
-    backend: placement-api
+  placement:
+    name: placement
+    backend: placement
     port: 8778
-  - name: horizon
+  horizon:
+    name: horizon
     backend: horizon
     port: 8000
 
@@ -111,8 +72,7 @@ mysql:
   database_map:
     common:
       dbs: [keystone, glance, nova_api, nova_cell0, nova, neutron]
-      # host: openstack-db-mariadb.default.svc.cluster.local
-      host: openstack-mysql@domain_suffix
+      host: openstack-mysql.default.svc.cluster.local
       port: 3306
       user: root
       password: rootpass
@@ -124,6 +84,6 @@ rabbitmq:
       transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq@domain_suffix:5672
       user: openstack
       password: openstackpass
-      host: openstack-rpc-rabbitmq@domain_suffix
+      host: openstack-rabbitmq.default.svc.cluster.local
       port: 5672
       vhost: ''

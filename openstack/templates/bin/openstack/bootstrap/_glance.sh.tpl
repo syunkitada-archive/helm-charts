@@ -1,11 +1,7 @@
 #!/bin/bash -xe
 
-{{$keystone := .Values.openstack.service_map.keystone}}
-{{$glance := .Values.openstack.service_map.glance}}
-{{$admin_password := .Values.openstack.admin_password}}
-
-/opt/kubernetes/bin/helm get openstack-glance \
-    || /opt/kubernetes/bin/helm install /opt/openstack-helm/glance \
+helm get openstack-glance \
+    || helm install /opt/openstack-helm/glance \
         --name openstack-glance
 
 /opt/glance/bin/glance-manage db_sync

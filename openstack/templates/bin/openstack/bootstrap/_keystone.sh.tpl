@@ -1,12 +1,21 @@
 #!/bin/bash -xe
 
-{{$keystone := .Values.openstack.service_map.keystone}}
-{{$glance := .Values.openstack.service_map.glance}}
-{{$admin_password := .Values.openstack.admin_password}}
+{{- $http_protocol := .Values.openstack.http_protocol }}
+{{- $region := .Values.openstack.region }}
+{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
+{{- $admin_password := .Values.openstack.admin_password }}
 
-/opt/kubernetes/bin/helm get openstack-keystone \
-    || /opt/kubernetes/bin/helm install /opt/openstack-helm/keystone \
-        --name openstack-keystone
+source /mnt/openstack/etc/adminrc
+
+helm get values openstack > /tmp/values.yaml
+helm get openstack-keystone \
+    || helm install /opt/openstack-helm/keystone \
+        --name openstack-keystone -f /tmp/values.yaml
+
+kubectl get cm keystone-etc -o jsonpath='{.data.keystone\.conf}' > /etc/keystone/keystone.conf
+mkdir -p /etc/keystone/fernet-keys
+kubectl get cm keystone-fernet-keys -o jsonpath='{.data.0}' > /etc/keystone/fernet-keys/0
+kubectl get cm keystone-fernet-keys -o jsonpath='{.data.1}' > /etc/keystone/fernet-keys/1
 
 echo "db_sync"
 /opt/keystone/bin/keystone-manage db_sync
@@ -14,13 +23,10 @@ echo "db_sync"
 echo "bootstrap"
 # Setup bootstrap
 /opt/keystone/bin/keystone-manage bootstrap --bootstrap-password {{$admin_password}} \
-  --bootstrap-admin-url {{$keystone.admin_url}} \
-  --bootstrap-internal-url {{$keystone.internal_url}} \
-  --bootstrap-public-url {{$keystone.public_url}} \
-  --bootstrap-region-id {{$keystone.region}}
-
-
-source /etc/openstack/adminrc
+  --bootstrap-public-url {{ $http_protocol }}://keystone-public{{ $ingress_suffix }}/v3/ \
+  --bootstrap-internal-url {{ $http_protocol }}://keystone-public{{ $ingress_suffix }}/v3/ \
+  --bootstrap-admin-url {{ $http_protocol }}://keystone-admin{{ $ingress_suffix }}/v3/ \
+  --bootstrap-region-id {{ $region }}
 
 # Setup projects
 {{range $project := .Values.openstack.projects}}
@@ -30,7 +36,7 @@ openstack project show {{$project}} || openstack project create {{$project}}
 
 # Setup users
 {{range $user, $user_data := .Values.openstack.user_map}}
-openstack user show openstack \
+openstack user show {{$user_data.user}} \
 || ( \
 openstack user create --domain {{$user_data.domain}} --password {{$user_data.password}} {{$user_data.user}} && \
 openstack role add --project {{$user_data.project}} --user {{$user_data.user}} {{$user_data.role}} \
@@ -39,14 +45,55 @@ openstack role add --project {{$user_data.project}} --user {{$user_data.user}} {
 
 
 # Setup services
-{{range $service, $service_data := .Values.openstack.service_map}}
-{{if or (ne $service "keystone") $service_data.enable}}
-openstack service show {{$service}} \
+{{- range $service := .Values.openstack.enable_services }}
+
+{{- if eq $service "glance" }}
+openstack service show {{ $service }} \
 || ( \
-openstack service create --name {{$service}} --description "{{$service_data.description}}" {{$service_data.type}} && \
-openstack endpoint create --region {{$service_data.region}} {{$service_data.type}} public   {{$service_data.public_url}} && \
-openstack endpoint create --region {{$service_data.region}} {{$service_data.type}} internal {{$service_data.internal_url}} && \
-openstack endpoint create --region {{$service_data.region}} {{$service_data.type}} admin    {{$service_data.admin_url}} \
+description="OpenStack Image" && \
+type="image" && \
+url="{{ $http_protocol }}://{{ $service }}{{ $ingress_suffix }}" && \
+openstack service create --name {{ $service }} --description "$description" $type && \
+openstack endpoint create --region {{ $region }} $type public   $url && \
+openstack endpoint create --region {{ $region }} $type internal $url && \
+openstack endpoint create --region {{ $region }} $type admin    $url \
 )
-{{end}}
-{{end}}
+
+{{- else if eq $service "nova" }}
+openstack service show {{ $service }} \
+|| ( \
+description="OpenStack Compute" && \
+type="compute" && \
+url="{{ $http_protocol }}://{{ $service }}{{ $ingress_suffix }}/v2.1" && \
+openstack service create --name {{ $service }} --description "$description" $type && \
+openstack endpoint create --region {{ $region }} $type public   $url && \
+openstack endpoint create --region {{ $region }} $type internal $url && \
+openstack endpoint create --region {{ $region }} $type admin    $url \
+)
+
+{{- else if eq $service "neutron" }}
+openstack service show {{ $service }} \
+|| ( \
+description="OpenStack Networking" && \
+type="network" && \
+url="{{ $http_protocol }}://{{ $service }}{{ $ingress_suffix }}" && \
+openstack service create --name {{ $service }} --description "$description" $type && \
+openstack endpoint create --region {{ $region }} $type public   $url && \
+openstack endpoint create --region {{ $region }} $type internal $url && \
+openstack endpoint create --region {{ $region }} $type admin    $url \
+)
+
+{{- else if eq $service "placement" }}
+openstack service show {{ $service }} \
+|| ( \
+description="OpenStack Placement" && \
+type="placement" && \
+url="{{ $http_protocol }}://{{ $service }}{{ $ingress_suffix }}" && \
+openstack service create --name {{ $service }} --description "$description" $type && \
+openstack endpoint create --region {{ $region }} $type public   $url && \
+openstack endpoint create --region {{ $region }} $type internal $url && \
+openstack endpoint create --region {{ $region }} $type admin    $url \
+)
+
+{{- end }}
+{{- end }}

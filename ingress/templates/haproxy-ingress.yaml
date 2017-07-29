@@ -1,0 +1,39 @@
+# apiVersion: extensions/v1beta1
+# kind: DaemonSet
+# metadata:
+#   name: haproxy-ingress
+#   namespace: {{ .Values.namespace }}
+#   labels:
+#     run: haproxy-ingress
+# spec:
+#   template:
+#     metadata:
+#       labels:
+#         run: haproxy-ingress
+#     spec:
+#       hostNetwork: true
+#       serviceAccount: ingress
+#       nodeSelector:
+#         openstack-controller: ""
+#       containers:
+#         - name: haproxy-ingress
+#           image: quay.io/jcmoraisjr/haproxy-ingress:v0.3
+#           imagePullPolicy: IfNotPresent
+#           args:
+#             - --default-backend-service={{ .Values.namespace }}/default-http-backend
+#           ports:
+#             - name: http
+#               containerPort: 80
+#             - name: https
+#               containerPort: 443
+#             - name: stat
+#               containerPort: 1936
+#           env:
+#             - name: POD_NAME
+#               valueFrom:
+#                 fieldRef:
+#                   fieldPath: metadata.name
+#             - name: POD_NAMESPACE
+#               valueFrom:
+#                 fieldRef:
+#                   fieldPath: metadata.namespace

@@ -13,6 +13,7 @@ spec:
         chart: openstack
     spec:
       hostNetwork: true
+      dnsPolicy: ClusterFirst
       serviceAccount: openstack
       tolerations:
         - key: node-role.kubernetes.io/master
@@ -28,54 +29,18 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - name: opt-kubernetes
-              mountPath: /opt/kubernetes
-            - name: opt-openstack-helm
-              mountPath: /opt/openstack-helm
-            - name: bin-openstack
-              mountPath: /mnt/bin/openstack
-            - name: etc-resolv-conf
-              mountPath: /etc/resolv.conf
-              subPath: resolv.conf
-            - name: etc-openstack
-              mountPath: /etc/openstack
-            - name: etc-keystone
-              mountPath: /etc/keystone
-            - name: etc-glance
-              mountPath: /etc/glance
-            - name: etc-neutron
-              mountPath: /etc/neutron
-            - name: etc-nova
-              mountPath: /etc/nova
+            - name: openstack-bin
+              mountPath: /mnt/openstack/bin
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
           env:
             - name: WATCH_INTERVAL
               value: '10'
       volumes:
-        - name: opt-kubernetes
-          hostPath:
-            path: /opt/kubernetes
-        - name: opt-openstack-helm
-          hostPath:
-            path: /opt/openstack-helm
-        - name: bin-openstack
+        - name: openstack-bin
           configMap:
-            name: bin-openstack
+            name: openstack-bin
             defaultMode: 0755
-        - name: etc-resolv-conf
+        - name: openstack-etc
           configMap:
-            name: etc-resolv-conf
-        - name: etc-openstack
-          configMap:
-            name: etc-openstack
-        - name: etc-keystone
-          configMap:
-            name: etc-keystone
-        - name: etc-glance
-          configMap:
-            name: etc-glance
-        - name: etc-neutron
-          configMap:
-            name: etc-neutron
-        - name: etc-nova
-          configMap:
-            name: etc-nova
+            name: openstack-etc

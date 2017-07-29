@@ -1,9 +1,10 @@
+{{- $openstack := .Values.openstack }}
 {{- $db := .Values.mysql.database_map.common }}
 [DEFAULT]
-debug = {{.Values.keystone.default.debug | default "false"}}
+debug = {{ .Values.openstack.debug | default "false" }}
 
 [database]
 connection = mysql+pymysql://{{$db.user}}:{{$db.password}}@{{$db.host}}:{{$db.port}}/keystone
 
 [token]
-provider = {{.Values.keystone.token.provider}}
+provider = {{ $openstack.keystone.token.provider | default "fernet" }}

@@ -12,10 +12,32 @@ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admi
 kubectl patch deployment tiller-deploy -p'{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' -n kube-system
 ```
 
+```
+cat << EOS > openssl.cnf
+[req]
+req_extensions = v3_req
+distinguished_name = req_distinguished_name
+[req_distinguished_name]
+[ v3_req ]
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = *.k8s.example.com
+EOS
+
+openssl genrsa -out server.key 4096
+openssl req -new -key server.key -out server.csr -subj "/CN=*.k8s.example.com" -config openssl.cnf
+openssl x509 -days 365 -req -signkey server.key -in server.csr -out server.crt
+
+kubectl create secret tls tls-ingress --key server.key --cert server.crt
+```
+
+
 ### set label
 ```
-kubectl label nodes kubernetes-ubuntu7-2-hostname openstack-controller=
-kubectl label nodes kubernetes-ubuntu7-3-hostname openstack-compute=
+kubectl label nodes kubernetes-centos7-2.example.com openstack-controller=
+kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=
 sudo mkdir -p /opt/kubernetes/bin
 sudo cp /usr/local/bin/helm /opt/kubernetes/bin/
 sudo cp /usr/bin/kubectl /opt/kubernetes/bin/

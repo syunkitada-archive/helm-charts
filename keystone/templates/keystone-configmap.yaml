@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keystone-etc
+data:
+  keystone.conf: |+
+{{ tuple "etc/_keystone.conf.tpl" . | include "funcs.template" | indent 4 }}
+  nginx-keystone.conf: |+
+{{ tuple "etc/_nginx-keystone.conf.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keystone-bin
+data:
+  keystone.sh: |+
+{{ tuple "bin/_keystone.sh.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keystone-fernet-keys
+data:
+  0: "GmBdGSnWQb-Zb-xZ0HfKSl70qihUDcK3Vb-69G15cZY="
+  1: "8keZpNarObqhRh8eZmD8WnW8WsLejwm-H954InzPc6w="

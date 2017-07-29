@@ -1,43 +1,29 @@
+{{- $http_protocol := .Values.openstack.http_protocol }}
 {{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 {{- $ingress_vip := .Values.openstack.ingress_vip }}
-{{- range .Values.ingress }}
+{{- $ingress_tls := .Values.openstack.ingress_tls }}
+{{- range $key, $ingress := .Values.ingress }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ .name }}
+  name: {{ $ingress.name }}
   annotations:
     ingress.kubernetes.io/proxy-body-size: 1g
 spec:
+  {{- if eq $http_protocol "https" }}
+  tls:
+    - secretName: {{ $ingress_tls }}
+      hosts:
+        - {{ $ingress.name }}{{ $ingress_suffix }}
+  {{- end }}
   rules:
-  - host: {{ .name }}{{ $ingress_suffix }}
-    http:
-      paths:
-      - backend:
-          serviceName: {{ .backend }}
-          servicePort: {{ .port }}
+    - host: {{ $ingress.name }}{{ $ingress_suffix }}
+      http:
+        paths:
+          - backend:
+              serviceName: {{ $ingress.backend }}
+              servicePort: {{ $ingress.port }}
 
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .name }}{{ $ingress_suffix }}
-spec:
-  ports:
-    - protocol: TCP
-      port: 80
-
----
-
-kind: Endpoints
-apiVersion: v1
-metadata:
-  name: {{ .name }}{{ $ingress_suffix }}
-subsets:
-  - addresses:
-      - ip: {{ $ingress_vip }}
-    ports:
-      - port: 80
 
 ---
 {{- end }}

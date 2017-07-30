@@ -1,4 +1,5 @@
-{{- $keystone := .Values.openstack.service_map.keystone}}
+{{- $http_protocol := .Values.openstack.http_protocol }}
+{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 # -*- coding: utf-8 -*-
 
 import os
@@ -10,6 +11,35 @@ from horizon.utils import secret_key
 from openstack_dashboard.settings import HORIZON_CONFIG
 
 DEBUG = True
+COMPRESS_OFFLINE = False
+ALLOWED_HOSTS = ['*', ]
+
+LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+}
+
+SECRET_KEY = secret_key.generate_or_read_from_file(
+    os.path.join(LOCAL_PATH, '.secret_key_store'))
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+OPENSTACK_HOST = "keystone-public{{ $ingress_suffix }}"
+OPENSTACK_KEYSTONE_URL = "{{ $http_protocol }}://%s:5000/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
+
+OPENSTACK_KEYSTONE_BACKEND = {
+    'name': 'native',
+    'can_edit_user': True,
+    'can_edit_group': True,
+    'can_edit_project': True,
+    'can_edit_domain': True,
+    'can_edit_role': True,
+}
+
 
 # This setting controls whether or not compression is enabled. Disabling
 # compression makes Horizon considerably slower, but makes it much easier
@@ -21,7 +51,6 @@ DEBUG = True
 # See https://django-compressor.readthedocs.io/en/latest/usage/#offline-compression
 # for more information
 #COMPRESS_OFFLINE = not DEBUG
-COMPRESS_OFFLINE = False
 
 # WEBROOT is the location relative to Webserver root
 # should end with a slash.
@@ -39,7 +68,6 @@ WEBROOT = '/'
 # For more information see:
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 #ALLOWED_HOSTS = ['horizon.example.com', ]
-ALLOWED_HOSTS = ['*', ]
 
 # Set SSL proxy settings:
 # Pass this header from the proxy after terminating the SSL,
@@ -124,7 +152,6 @@ ALLOWED_HOSTS = ['*', ]
 # including on the login form.
 #HORIZON_CONFIG["disable_password_reveal"] = False
 
-LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 
 # Set custom secret key:
 # You can either set it to a specific value or you can let horizon generate a
@@ -135,8 +162,6 @@ LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 # (usually behind a load-balancer). Either you have to make sure that a session
 # gets all requests routed to the same dashboard instance or you set the same
 # SECRET_KEY for all of them.
-SECRET_KEY = secret_key.generate_or_read_from_file(
-    os.path.join(LOCAL_PATH, '.secret_key_store'))
 
 # We recommend you use memcached for development; otherwise after every reload
 # of the django development server, you will have to login again. To use
@@ -148,14 +173,7 @@ SECRET_KEY = secret_key.generate_or_read_from_file(
 #    },
 #}
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    },
-}
-
 # Send email to the console by default
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Or send them to /dev/null
 #EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
 
@@ -171,10 +189,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 #    ('http://cluster2.example.com:5000/v2.0', 'cluster2'),
 #]
 
-OPENSTACK_HOST = "127.0.0.1"
-# OPENSTACK_KEYSTONE_URL = "http://%s:5000/v2.0" % OPENSTACK_HOST
-OPENSTACK_KEYSTONE_URL = "{{$keystone.public_url}}"
-OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
 
 # Enables keystone web single-sign-on if set to True.
 #WEBSSO_ENABLED = False
@@ -230,14 +244,6 @@ OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
 # can_edit_user to False and name to 'ldap'.
 #
 # TODO(tres): Remove these once Keystone has an API to identify auth backend.
-OPENSTACK_KEYSTONE_BACKEND = {
-    'name': 'native',
-    'can_edit_user': True,
-    'can_edit_group': True,
-    'can_edit_project': True,
-    'can_edit_domain': True,
-    'can_edit_role': True,
-}
 
 # Setting this to True, will add a new "Retrieve Password" action on instance,
 # allowing Admin session password retrieval/decryption.

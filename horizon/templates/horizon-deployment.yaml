@@ -1,0 +1,56 @@
+{{- $horizon := .Values.chart.horizon }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: horizon
+  labels:
+    chart: horizon
+spec:
+  replicas: {{ $horizon.replica_count }}
+  template:
+    metadata:
+      labels:
+        app: horizon
+      annotations:
+        horizon-configmap: {{ tuple "horizon-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      serviceAccount: openstack
+      nodeSelector:
+        openstack-controller: ""
+      containers:
+        - name: nginx
+          command: ["/mnt/horizon/bin/horizon.sh", "start_nginx"]
+          image: "{{ $horizon.image.repository }}:{{ $horizon.image.tag }}"
+          imagePullPolicy: {{ $horizon.image.pull_policy }}
+          ports:
+            - name: horizon
+              containerPort: 8000
+          volumeMounts:
+            - name: horizon-bin
+              mountPath: /mnt/horizon/bin
+            - name: horizon-etc
+              mountPath: /mnt/horizon/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+        - name: horizon
+          command: ["/mnt/horizon/bin/horizon.sh", "start"]
+          image: "{{ $horizon.image.repository }}:{{ $horizon.image.tag }}"
+          imagePullPolicy: {{ $horizon.image.pull_policy }}
+          volumeMounts:
+            - name: horizon-bin
+              mountPath: /mnt/horizon/bin
+            - name: horizon-etc
+              mountPath: /mnt/horizon/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+      volumes:
+        - name: horizon-bin
+          configMap:
+            name: horizon-bin
+            defaultMode: 0755
+        - name: horizon-etc
+          configMap:
+            name: horizon-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

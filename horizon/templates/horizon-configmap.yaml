@@ -1,33 +1,21 @@
-{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
-{{- $ingress_suffix := .Values.openstack.ingress_suffix }}
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: etc-horizon
+  name: horizon-etc
 data:
   local_settings.py: |+
-{{ tuple "etc/horizon/_local_settings.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
-
-
----
-
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: etc-horizon-nginx-conf
-data:
+{{ tuple "etc/_local_settings.py.tpl" . | include "funcs.template" | indent 4 }}
   nginx-horizon.conf: |+
-{{ tuple "etc/horizon/_nginx.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_nginx-horizon.conf.tpl" . | include "funcs.template" | indent 4 }}
 
 
 ---
 
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: bin-horizon
+  name: horizon-bin
 data:
-  start.sh: |+
-{{ tuple "bin/horizon/_start.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
+  horizon.sh: |+
+{{ tuple "bin/_horizon.sh.tpl" . | include "funcs.template" | indent 4 }}

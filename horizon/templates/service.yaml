@@ -7,9 +7,9 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 8000
-    targetPort: 8000
-    protocol: TCP
-    name: horizon
+    - port: 8000
+      targetPort: 8000
+      protocol: TCP
+      name: horizon
   selector:
     app: horizon

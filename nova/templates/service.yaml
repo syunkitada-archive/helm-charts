@@ -10,9 +10,9 @@ spec:
     - port: 8774
       targetPort: 8774
       protocol: TCP
-      name: nova-api
+      name: nova
   selector:
-    app: nova-api
+    app: nova
 
 
 ---

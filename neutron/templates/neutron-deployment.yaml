@@ -6,7 +6,7 @@ metadata:
   labels:
     chart: neutron
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ $neutron.replicas }}
   template:
     metadata:
       labels:

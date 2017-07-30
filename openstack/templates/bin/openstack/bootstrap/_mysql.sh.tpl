@@ -2,6 +2,7 @@
 {{$mysql := .Values.mysql}}
 {{$admin_password := .Values.openstack.admin_password}}
 
+source /mnt/openstack/etc/adminrc
 
 helm get openstack-mysql \
     || helm install /opt/openstack-helm/mariadb \

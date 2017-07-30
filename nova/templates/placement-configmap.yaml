@@ -4,7 +4,7 @@ metadata:
   name: placement-etc
 data:
   nginx-placement.conf: |+
-{{ tuple "etc/nova/_nginx-placement.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_nginx-placement.conf.tpl" . | include "funcs.template" | indent 4 }}
 
 
 ---

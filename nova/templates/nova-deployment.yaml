@@ -1,36 +1,67 @@
+{{- $nova := .Values.chart.nova }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: nova-api
+  name: nova
   labels:
     chart: nova
 spec:
-  replicas: {{ .Values.nova.api.replicas }}
+  replicas: {{ $nova.api.replicas }}
   template:
     metadata:
       labels:
-        app: nova-api
+        app: nova
+      annotations:
+        nova-configmap: {{ tuple "nova-configmap.yaml" . | include "funcs.hash" }}
     spec:
       serviceAccount: openstack
       nodeSelector:
         openstack-controller: ""
       containers:
-      - name: nova-api
-        # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-        command: [
-          "/opt/nova/bin/nova-api",
-          "--config-file", "/etc/nova/nova.conf",
-        ]
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        securityContext:
-          privileged: true
-        ports:
-        - containerPort: 8774
-        volumeMounts:
-        - name: etc-nova
-          mountPath: /etc/nova
+        - name: nova
+          securityContext:
+            privileged: true
+          command: ["/mnt/nova/bin/nova.sh", "start_api"]
+          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
+          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          ports:
+            - containerPort: 8774
+          readinessProbe:
+            timeoutSeconds: {{ $nova.probes_timeout }}
+            exec:
+              command: ["/mnt/nova/bin/nova.sh", "readiness_api"]
+          livenessProbe:
+            initialDelaySeconds: {{ $nova.probes_delay }}
+            timeoutSeconds: {{ $nova.probes_timeout }}
+            exec:
+              command: ["/mnt/nova/bin/nova.sh", "liveness_api"]
+          volumeMounts:
+            - name: nova-bin
+              mountPath: /mnt/nova/bin
+            - name: nova-bin
+              mountPath: /sbin/iptables
+              subPath: fake-iptables.sh
+              readOnly: true
+            - name: nova-bin
+              mountPath: /sbin/iptables-restore
+              subPath: fake-iptables.sh
+              readOnly: true
+            - name: nova-bin
+              mountPath: /sbin/iptables-save
+              subPath: fake-iptables.sh
+              readOnly: true
+            - name: nova-etc
+              mountPath: /mnt/nova/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
       volumes:
-      - name: etc-nova
-        configMap:
-          name: etc-nova
+        - name: nova-bin
+          configMap:
+            name: nova-bin
+            defaultMode: 0755
+        - name: nova-etc
+          configMap:
+            name: nova-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

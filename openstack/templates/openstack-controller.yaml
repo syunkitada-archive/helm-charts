@@ -33,6 +33,8 @@ spec:
               mountPath: /mnt/openstack/bin
             - name: openstack-etc
               mountPath: /mnt/openstack/etc
+            - name: opt-openstack-helm
+              mountPath: /opt/openstack-helm
           env:
             - name: WATCH_INTERVAL
               value: '10'
@@ -44,3 +46,6 @@ spec:
         - name: openstack-etc
           configMap:
             name: openstack-etc
+        - name: opt-openstack-helm
+          hostPath:
+            path: /opt/openstack-helm

@@ -3,8 +3,8 @@
 ## Require
 ### Install Helm
 ``` bash
-wget https://storage.googleapis.com/kubernetes-helm/helm-v2.4.2-linux-amd64.tar.gz && \
-tar -xf helm-v2.4.2-linux-amd64.tar.gz && \
+wget https://storage.googleapis.com/kubernetes-helm/helm-v2.5.1-linux-amd64.tar.gz && \
+tar -xf helm-v2.5.1-linux-amd64.tar.gz && \
 sudo mv linux-amd64/helm /usr/local/bin/ && \
 helm init && \
 kubectl create serviceaccount --namespace kube-system tiller && \

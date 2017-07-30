@@ -17,3 +17,5 @@ metadata:
 data:
   nova.sh: |+
 {{ tuple "bin/_nova.sh.tpl" . | include "funcs.template" | indent 4 }}
+  fake-iptables.sh: |+
+{{ tuple "bin/_fake-iptables.sh.tpl" . | include "funcs.template" | indent 4 }}

@@ -1,44 +1,58 @@
+{{- $nova := .Values.chart.nova }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: placement-api
+  name: placement
   labels:
     chart: nova
 spec:
-  replicas: {{ .Values.nova.api.replicas }}
+  replicas: {{ $nova.placement.replicas }}
   template:
     metadata:
       labels:
-        app: placement-api
+        app: placement
+      annotations:
+        nova-configmap: {{ tuple "nova-configmap.yaml" . | include "funcs.hash" }}
+        placement-configmap: {{ tuple "placement-configmap.yaml" . | include "funcs.hash" }}
     spec:
+      serviceAccount: openstack
       containers:
-      - name: nginx
-        command: ["/bin/bash", "-c", "nginx -g 'daemon off;'"]
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-          - name: placement-api
-            containerPort: 8778
-        volumeMounts:
-          - name: etc-nova-placement-nginx-conf
-            mountPath: /etc/nginx/conf.d
-      - name: placement-api
-        command: [
-          '/opt/openstack-tools/bin/uwsgi',
-          '--socket', '127.0.0.1:8080', '--master',
-          '--home', '/opt/nova',
-          '--wsgi-file', '/opt/nova/bin/nova-placement-api',
-          '--processes', '2', '--threads', '1',
-        ]
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        volumeMounts:
-          - name: etc-nova
-            mountPath: /etc/nova
+        - name: nginx
+          command: ["/mnt/placement/bin/placement.sh", "start_nginx"]
+          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
+          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          ports:
+            - name: placement-api
+              containerPort: 8778
+          volumeMounts:
+            - name: placement-bin
+              mountPath: /mnt/placement/bin
+            - name: placement-etc
+              mountPath: /mnt/placement/etc
+        - name: placement-api
+          command: ["/mnt/placement/bin/placement.sh", "start_placement"]
+          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
+          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          volumeMounts:
+            - name: placement-bin
+              mountPath: /mnt/placement/bin
+            - name: placement-etc
+              mountPath: /mnt/placement/etc
+            - name: nova-etc
+              mountPath: /mnt/nova/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
       volumes:
-      - name: etc-nova
-        configMap:
-          name: etc-nova
-      - name: etc-nova-placement-nginx-conf
-        configMap:
-          name: etc-nova-placement-nginx-conf
+        - name: placement-bin
+          configMap:
+            name: placement-bin
+            defaultMode: 0755
+        - name: placement-etc
+          configMap:
+            name: placement-etc
+        - name: nova-etc
+          configMap:
+            name: nova-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

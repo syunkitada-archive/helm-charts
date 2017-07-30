@@ -1,13 +1,16 @@
-image:
-  repository: syunkitada/centos7-openstack-all
-  tag: pike
-  pullPolicy: IfNotPresent
-
-
-nova:
-  api:
-    replicas: 1
-  conductor:
-    replicas: 1
-  scheduler:
-    replicas: 1
+chart:
+  nova:
+    api:
+      replicas: 1
+    scheduler:
+      replicas: 1
+    conductor:
+      replicas: 1
+    placement:
+      replicas: 1
+    probes_delay: 30
+    probes_timeout: 30
+    image:
+      repository: syunkitada/centos7-openstack-all
+      tag: pike
+      pull_policy: IfNotPresent

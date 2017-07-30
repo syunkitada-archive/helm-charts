@@ -1,6 +1,6 @@
 chart:
   neutron:
-    replica_count: 1
+    replicas: 1
     probes_delay: 30
     probes_timeout: 30
     image:

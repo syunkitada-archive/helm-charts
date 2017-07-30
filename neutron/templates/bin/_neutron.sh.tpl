@@ -24,7 +24,7 @@ function start() {
 
 function start_linuxbridge_agent() {
     bootstrap
-    yum -y install iproute ebtables
+    yum -y install iproute ebtables bridge-utils
     /opt/neutron/bin/neutron-linuxbridge-agent \
         --config-file /etc/neutron/neutron.conf \
         --config-file /etc/neutron/ml2_conf.ini \

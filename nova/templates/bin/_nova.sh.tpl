@@ -17,7 +17,7 @@ function bootstrap_compute() {
     cp /etc/yum.repos.d/openstack.repo /host/etc/yum.repos.d/openstack.repo
     chroot /host yum install -y epel-release
     chroot /host yum install -y vde2-2.3.2 qemu-2.9.0
-    chroot /host yum install libvirt
+    chroot /host yum install -y libvirt
     cp /mnt/nova/etc/qemu.conf /host/etc/libvirt/
     chroot /host useradd qemu || echo "Already exists qemu user"
     chroot /host systemctl restart libvirtd

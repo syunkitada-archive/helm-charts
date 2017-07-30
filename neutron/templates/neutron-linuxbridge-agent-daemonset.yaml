@@ -34,6 +34,11 @@ spec:
               mountPath: /mnt/neutron/etc
             - name: openstack-etc
               mountPath: /mnt/openstack/etc
+            - name: libmodules
+              mountPath: /lib/modules
+              readOnly: true
+            - name: run
+              mountPath: /run
       volumes:
         - name: neutron-bin
           configMap:
@@ -45,3 +50,9 @@ spec:
         - name: openstack-etc
           configMap:
             name: openstack-etc
+        - name: libmodules
+          hostPath:
+            path: /lib/modules
+        - name: run
+          hostPath:
+            path: /run

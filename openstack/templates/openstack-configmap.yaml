@@ -42,5 +42,3 @@ data:
 {{ tuple "bin/openstack/bootstrap/_neutron.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-20-horizon.sh: |+
 {{ tuple "bin/openstack/bootstrap/_horizon.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
-  bootstrap-50-compute.sh: |+
-{{ tuple "bin/openstack/bootstrap/_compute.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

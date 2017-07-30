@@ -5,6 +5,8 @@ metadata:
 data:
   nova.conf: |+
 {{ tuple "etc/_nova.conf.tpl" . | include "funcs.template" | indent 4 }}
+  qemu.conf: |+
+{{ tuple "etc/_qemu.conf.tpl" . | include "funcs.template" | indent 4 }}
 
 
 ---

@@ -1,0 +1,83 @@
+{{- $nova := .Values.chart.nova }}
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: nova-compute
+  labels:
+    chart: nova
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: nova-compute
+      annotations:
+        nova-configmap: {{ tuple "nova-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      serviceAccount: openstack
+      hostNetwork: true
+      hostPID: true
+      nodeSelector:
+        openstack-compute: ""
+      containers:
+        - name: nova-compute
+          command: ["/mnt/nova/bin/nova.sh", "start_compute"]
+          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
+          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: nova-bin
+              mountPath: /mnt/nova/bin
+            - name: nova-etc
+              mountPath: /mnt/nova/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+            - name: host
+              mountPath: /host
+            - mountPath: /lib/modules
+              name: libmodules
+              readOnly: true
+            - name: varlibnova
+              mountPath: /var/lib/nova
+            - name: varliblibvirt
+              mountPath: /var/lib/libvirt
+            - name: varrun
+              mountPath: /var/run
+            - name: run
+              mountPath: /run
+            - name: cgroup
+              mountPath: /sys/fs/cgroup
+      volumes:
+        - name: nova-bin
+          configMap:
+            name: nova-bin
+            defaultMode: 0755
+        - name: nova-etc
+          configMap:
+            name: nova-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc
+        - name: host
+          hostPath:
+            path: /
+        - name: libmodules
+          hostPath:
+            path: /lib/modules
+        - name: varlibnova
+          hostPath:
+            path: /var/lib/nova
+        - name: varliblibvirt
+          hostPath:
+            path: /var/lib/libvirt
+        - name: varrun
+          hostPath:
+            path: /var/run/
+        - name: run
+          hostPath:
+            path: /run
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup

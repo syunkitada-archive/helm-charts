@@ -1,0 +1,47 @@
+{{- $neutron := .Values.chart.neutron }}
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: neutron-linuxbridge-agent
+  labels:
+    chart: neutron
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: neutron-linuxbridge-agent
+      annotations:
+        neutron-configmap: {{ tuple "neutron-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      serviceAccount: openstack
+      hostNetwork: true
+      hostPID: true
+      nodeSelector:
+        openstack-compute: ""
+      containers:
+        - name: neutron-linuxbrige-agent
+          command: ["/mnt/neutron/bin/neutron.sh", "start_linuxbridge_agent"]
+          image: "{{ $neutron.image.repository }}:{{ $neutron.image.tag }}"
+          imagePullPolicy: {{ $neutron.image.pull_policy }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: neutron-bin
+              mountPath: /mnt/neutron/bin
+            - name: neutron-etc
+              mountPath: /mnt/neutron/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+      volumes:
+        - name: neutron-bin
+          configMap:
+            name: neutron-bin
+            defaultMode: 0755
+        - name: neutron-etc
+          configMap:
+            name: neutron-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

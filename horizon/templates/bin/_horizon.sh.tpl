@@ -8,6 +8,9 @@ COMMAND="${@:-start}"
 function bootstrap() {
     source /mnt/openstack/etc/resolvrc
     cp /mnt/horizon/etc/local_settings.py /etc/horizon/
+    cd /opt/horizon/share/horizon
+    /opt/horizon/bin/python manage.py collectstatic --noinput
+    /opt/horizon/bin/python manage.py compress --force
 }
 
 

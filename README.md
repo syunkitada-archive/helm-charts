@@ -37,6 +37,7 @@ kubectl create secret tls tls-ingress --key server.key --cert server.crt
 ### set label
 ```
 kubectl label nodes kubernetes-centos7-2.example.com openstack-controller=
+kubectl label nodes kubernetes-centos7-3.example.com openstack-controller=
 kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=
 sudo mkdir -p /opt/kubernetes/bin
 sudo cp /usr/local/bin/helm /opt/kubernetes/bin/

@@ -27,8 +27,16 @@ SECRET_KEY = secret_key.generate_or_read_from_file(
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+OPENSTACK_API_VERSIONS = {
+    "data-processing": 1.1,
+    "identity": 3,
+    "image": 2,
+    "volume": 2,
+    "compute": 2,
+}
+
 OPENSTACK_HOST = "keystone-public{{ $ingress_suffix }}"
-OPENSTACK_KEYSTONE_URL = "{{ $http_protocol }}://%s:5000/v3" % OPENSTACK_HOST
+OPENSTACK_KEYSTONE_URL = "{{ $http_protocol }}://%s/v2.0" % OPENSTACK_HOST
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
 
 OPENSTACK_KEYSTONE_BACKEND = {
@@ -39,6 +47,19 @@ OPENSTACK_KEYSTONE_BACKEND = {
     'can_edit_domain': True,
     'can_edit_role': True,
 }
+
+OPENSTACK_HYPERVISOR_FEATURES = {
+    'can_set_mount_point': False,
+    'can_set_password': False,
+    'requires_keypair': False,
+    'enable_quotas': True
+}
+
+OPENSTACK_CINDER_FEATURES = {
+    'enable_backup': False,
+}
+
+OPENSTACK_SSL_NO_VERIFY = True
 
 
 # This setting controls whether or not compression is enabled. Disabling
@@ -284,18 +305,9 @@ WEBROOT = '/'
 # attached to instances (other Hypervisors currently do not). Setting
 # can_set_mount_point to True will add the option to set the mount point
 # from the UI.
-OPENSTACK_HYPERVISOR_FEATURES = {
-    'can_set_mount_point': False,
-    'can_set_password': False,
-    'requires_keypair': False,
-    'enable_quotas': True
-}
 
 # The OPENSTACK_CINDER_FEATURES settings can be used to enable optional
 # services provided by cinder that is not exposed by its extension API.
-OPENSTACK_CINDER_FEATURES = {
-    'enable_backup': False,
-}
 
 # The OPENSTACK_NEUTRON_NETWORK settings can be used to enable optional
 # services provided by neutron. Options currently available are load

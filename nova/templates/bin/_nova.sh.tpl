@@ -21,7 +21,7 @@ function bootstrap_compute() {
     cp /mnt/nova/etc/qemu.conf /host/etc/libvirt/
     chroot /host useradd qemu || echo "Already exists qemu user"
     chroot /host systemctl restart libvirtd
-    yum install -y libvirt-python sysfsutils dbus genisoimage
+    yum install -y libvirt-python sysfsutils dbus genisoimage vde2-2.3.2 qemu-2.9.0
 }
 
 

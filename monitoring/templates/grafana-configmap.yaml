@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-etc
+data:
+  grafana.ini: |+
+{{ tuple "etc/_grafana.ini.tpl" . | include "funcs.template" | indent 4 }}
+  ldap.toml: |+
+{{ tuple "etc/_ldap.toml.tpl" . | include "funcs.template" | indent 4 }}

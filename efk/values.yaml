@@ -1,0 +1,16 @@
+chart:
+  elasticsearch:
+    image:
+      repository: gcr.io/google_containers/elasticsearch
+      tag: v5.5.1
+      pullPolicy: Always
+  fluentd:
+    image:
+      repository: gcr.io/google_containers/elasticsearch
+      tag: v5.5.1
+      pullPolicy: Always
+  kibana:
+    image:
+      repository: gcr.io/google_containers/elasticsearch
+      tag: v5.5.1
+      pullPolicy: Always

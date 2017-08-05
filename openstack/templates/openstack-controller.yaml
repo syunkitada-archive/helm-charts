@@ -24,8 +24,8 @@ spec:
         node-role.kubernetes.io/master: ""
       containers:
         - name: openstack-controller
-          command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-          # command: ["/mnt/bin/openstack/start-bootstrap.py"]
+          # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+          command: ["/mnt/openstack/bin/start-bootstrap.py"]
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
@@ -33,11 +33,9 @@ spec:
               mountPath: /mnt/openstack/bin
             - name: openstack-etc
               mountPath: /mnt/openstack/etc
-            - name: opt-openstack-helm
-              mountPath: /opt/openstack-helm
           env:
             - name: WATCH_INTERVAL
-              value: '10'
+              value: '20'
       volumes:
         - name: openstack-bin
           configMap:
@@ -46,6 +44,3 @@ spec:
         - name: openstack-etc
           configMap:
             name: openstack-etc
-        - name: opt-openstack-helm
-          hostPath:
-            path: /opt/openstack-helm

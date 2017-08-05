@@ -31,6 +31,10 @@ openssl req -new -key server.key -out server.csr -subj "/CN=*.k8s.example.com" -
 openssl x509 -days 365 -req -signkey server.key -in server.csr -out server.crt
 
 kubectl create secret tls tls-ingress --key server.key --cert server.crt
+
+
+helm repo add charts https://syunkitada.github.io/chartrepo/charts
+helm install --name ingress charts/ingress
 ```
 
 

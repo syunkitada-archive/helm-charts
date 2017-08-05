@@ -9,7 +9,7 @@ source /mnt/openstack/etc/adminrc
 
 helm get values openstack > /tmp/values.yaml
 helm get openstack-keystone \
-    || helm install /opt/openstack-helm/keystone \
+    || helm install charts/keystone \
         --name openstack-keystone -f /tmp/values.yaml
 
 kubectl get cm keystone-etc -o jsonpath='{.data.keystone\.conf}' > /etc/keystone/keystone.conf

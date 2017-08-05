@@ -8,7 +8,7 @@ import os
 import util
 
 LOG = util.getLog(__name__)
-WATCH_DIR  = os.environ.get('WATCH_DIR', '/mnt/bin/openstack/')
+WATCH_DIR  = os.environ.get('WATCH_DIR', '/mnt/openstack/bin')
 WATCH_INTERVAL = int(os.environ.get('WATCH_INTERVAL', 10))
 
 
@@ -42,6 +42,7 @@ def main():
                 bootstrap['current_hash'] = tmp_hash
                 bootstrap_map[bootstrap_file] = bootstrap
 
+        LOG.info('sleep {0}'.format(WATCH_INTERVAL))
         time.sleep(WATCH_INTERVAL)
 
 

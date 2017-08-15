@@ -1,6 +1,6 @@
 # openstack-helm
 
-## Require
+## Requires
 ### Install Helm
 ``` bash
 wget https://storage.googleapis.com/kubernetes-helm/helm-v2.5.1-linux-amd64.tar.gz && \
@@ -12,6 +12,12 @@ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admi
 kubectl patch deployment tiller-deploy -p'{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' -n kube-system
 ```
 
+### set helm repo
+```
+helm repo add charts https://syunkitada.github.io/chartrepo/charts
+```
+
+### Create TLS
 ```
 cat << EOS > openssl.cnf
 [req]
@@ -31,17 +37,14 @@ openssl req -new -key server.key -out server.csr -subj "/CN=*.k8s.example.com" -
 openssl x509 -days 365 -req -signkey server.key -in server.csr -out server.crt
 
 kubectl create secret tls tls-ingress --key server.key --cert server.crt
-
-
-helm repo add charts https://syunkitada.github.io/chartrepo/charts
-helm install --name ingress charts/ingress
 ```
 
 
 ### set label
 ```
+kubectl label nodes kubernetes-centos7-1.example.com ingress-controller=
+kubectl label nodes kubernetes-centos7-1.example.com openstack-controller=
 kubectl label nodes kubernetes-centos7-2.example.com openstack-controller=
-kubectl label nodes kubernetes-centos7-3.example.com openstack-controller=
 kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=
 sudo mkdir -p /opt/kubernetes/bin
 sudo cp /usr/local/bin/helm /opt/kubernetes/bin/
@@ -49,9 +52,10 @@ sudo cp /usr/bin/kubectl /opt/kubernetes/bin/
 ```
 
 
-## Install openstack
+## Install charts
 ```
-helm install --name openstack openstack
+helm install --name ingress charts/ingress
+helm install --name openstack openstack -f openstack/values.yaml
 ```
 
 

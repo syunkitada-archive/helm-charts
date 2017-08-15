@@ -21,7 +21,7 @@ spec:
         - key: CriticalAddonsOnly
           operator: Exists
       nodeSelector:
-        node-role.kubernetes.io/master: ""
+        openstack-controller: ""
       containers:
         - name: openstack-controller
           # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]

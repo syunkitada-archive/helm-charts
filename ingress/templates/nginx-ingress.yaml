@@ -16,7 +16,7 @@ spec:
     spec:
       hostNetwork: true
       nodeSelector:
-        openstack-controller: ""
+        ingress-controller: ""
       serviceAccount: ingress
       terminationGracePeriodSeconds: 60
       containers:

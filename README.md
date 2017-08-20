@@ -42,7 +42,7 @@ openssl genrsa -out server.key 4096
 openssl req -new -key server.key -out server.csr -subj "/CN=*.k8s.example.com" -config openssl.cnf
 openssl x509 -days 365 -req -signkey server.key -in server.csr -out server.crt
 
-kubectl create secret tls tls-ingress --key server.key --cert server.crt
+kubectl create secret tls tls-ingress --key server.key --cert server.crt -n openstack
 ```
 
 

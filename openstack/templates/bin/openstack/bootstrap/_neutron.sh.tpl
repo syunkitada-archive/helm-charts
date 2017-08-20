@@ -5,7 +5,7 @@ source /mnt/openstack/etc/adminrc
 helm get values openstack > /tmp/values.yaml
 helm get openstack-neutron \
     || helm install charts/neutron \
-        --name openstack-neutron -f /tmp/values.yaml
+        --name openstack-neutron --namespace {{ .Release.Namespace }} -f /tmp/values.yaml
 
 kubectl get cm neutron-etc -o jsonpath='{.data.neutron\.conf}' > /etc/neutron/neutron.conf
 

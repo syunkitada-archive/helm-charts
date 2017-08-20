@@ -5,7 +5,7 @@ source /mnt/openstack/etc/adminrc
 helm get values openstack > /tmp/values.yaml
 helm get openstack-nova \
     || helm install charts/nova \
-        --name openstack-nova -f /tmp/values.yaml
+        --name openstack-nova --namespace {{ .Release.Namespace }} -f /tmp/values.yaml
 
 kubectl get cm nova-etc -o jsonpath='{.data.nova\.conf}' > /etc/nova/nova.conf
 

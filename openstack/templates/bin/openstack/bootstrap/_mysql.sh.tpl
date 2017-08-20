@@ -6,7 +6,7 @@ source /mnt/openstack/etc/adminrc
 
 helm get openstack-mysql \
     || helm install charts/mariadb \
-        --name openstack-mysql \
+        --name openstack-mysql --namespace {{ .Release.Namespace }} \
         --set persistence.enabled=false,mariadbRootPassword={{ $mysql.root_pass }}
 
 sleep 10

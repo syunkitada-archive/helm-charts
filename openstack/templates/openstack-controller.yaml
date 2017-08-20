@@ -15,11 +15,6 @@ spec:
       hostNetwork: true
       dnsPolicy: ClusterFirst
       serviceAccount: openstack
-      tolerations:
-        - key: node-role.kubernetes.io/master
-          effect: NoSchedule
-        - key: CriticalAddonsOnly
-          operator: Exists
       nodeSelector:
         openstack-controller: ""
       containers:

@@ -1,12 +1,14 @@
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: glance-etc
 data:
   glance-api.conf: |+
-{{ tuple "etc/_glance-api.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_glance-api.conf.tpl" . | include "funcs.template" | replace "@domain_suffix" $domain_suffix | indent 4 }}
   glance-registry.conf: |+
-{{ tuple "etc/_glance-registry.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_glance-registry.conf.tpl" . | include "funcs.template" | replace "@domain_suffix" $domain_suffix | indent 4 }}
 
 
 ---

@@ -1,10 +1,12 @@
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: keystone-etc
 data:
   keystone.conf: |+
-{{ tuple "etc/_keystone.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_keystone.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   nginx-keystone.conf: |+
 {{ tuple "etc/_nginx-keystone.conf.tpl" . | include "funcs.template" | indent 4 }}
 

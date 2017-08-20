@@ -1,10 +1,12 @@
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nova-etc
 data:
   nova.conf: |+
-{{ tuple "etc/_nova.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_nova.conf.tpl" . | include "funcs.template" | replace "@domain_suffix" $domain_suffix | indent 4 }}
   qemu.conf: |+
 {{ tuple "etc/_qemu.conf.tpl" . | include "funcs.template" | indent 4 }}
 

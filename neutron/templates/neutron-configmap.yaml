@@ -1,10 +1,12 @@
+{{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: neutron-etc
 data:
   neutron.conf: |+
-{{ tuple "etc/_neutron.conf.tpl" . | include "funcs.template" | indent 4 }}
+{{ tuple "etc/_neutron.conf.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   dhcp_agent.ini: |+
 {{ tuple "etc/_dhcp_agent.ini.tpl" . | include "funcs.template" | indent 4 }}
   metadata_agent.ini: |+

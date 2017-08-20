@@ -18,7 +18,12 @@ helm init -c
 helm repo add charts https://syunkitada.github.io/chartrepo/charts
 ```
 
-### Create TLS
+### Create NS for openstack
+```
+kubectl create ns openstack
+```
+
+### Create TLS for openstack
 ```
 cat << EOS > openssl.cnf
 [req]

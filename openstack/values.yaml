@@ -67,7 +67,7 @@ mysql:
   database_map:
     common:
       dbs: [keystone, glance, nova_api, nova_cell0, nova, neutron]
-      host: openstack-mysql.default.svc.cluster.local
+      host: openstack-mysql@domain_suffix
       port: 3306
       user: root
       password: rootpass
@@ -76,7 +76,7 @@ mysql:
 rabbitmq:
   connection_map:
     common:
-      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq.default.svc.cluster.local:5672
+      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq@domain_suffix:5672
       user: openstack
       password: openstackpass
       host: openstack-rabbitmq.default.svc.cluster.local

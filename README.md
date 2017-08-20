@@ -56,11 +56,12 @@ kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=
 helm install --name ingress charts/ingress
 
 # Create values.yaml. And if you want to change values, edit values.yaml
-cp openstack-helm/openstack/values.yaml values.yaml
+git clone git@github.com:syunkitada/openstack-helm.git
+cp openstack-helm/openstack/values.yaml ./values.yaml
 vim values.yaml
 
 # Install openstack
-helm install --name openstack charts/openstack -f values.yaml
+helm install charts/openstack --name openstack --namespace openstack -f values.yaml
 ```
 
 

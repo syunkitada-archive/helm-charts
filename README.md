@@ -14,6 +14,7 @@ kubectl patch deployment tiller-deploy -p'{"spec":{"template":{"spec":{"serviceA
 
 ### Set helm repo
 ```
+helm init -c
 helm repo add charts https://syunkitada.github.io/chartrepo/charts
 ```
 
@@ -51,8 +52,15 @@ kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=
 
 ## Install charts
 ```
+# Install ingress
 helm install --name ingress charts/ingress
-helm install --name openstack charts/openstack -f openstack-helm/openstack/values.yaml
+
+# Create values.yaml. And if you want to change values, edit values.yaml
+cp openstack-helm/openstack/values.yaml values.yaml
+vim values.yaml
+
+# Install openstack
+helm install --name openstack charts/openstack -f values.yaml
 ```
 
 

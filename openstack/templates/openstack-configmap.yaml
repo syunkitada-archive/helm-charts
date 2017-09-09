@@ -10,7 +10,7 @@ data:
 {{ tuple "etc/_adminrc.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   resolvrc: |+
 {{ tuple "etc/_resolvrc.tpl" . | include "funcs.template" | indent 4 }}
-  values.yaml:
+  values.yaml: |
 {{ toYaml .Values | indent 4 }}
 
 

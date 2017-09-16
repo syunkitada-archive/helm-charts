@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq-manager
+  labels:
+    chart: rabbitmq-manager
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      name: rabbitmq-manager
+      labels:
+        chart: rabbitmq-manager
+    spec:
+      serviceAccount: rabbitmq
+      nodeSelector:
+        openstack-controller: ""
+      containers:
+        - name: rabbitmq-manager
+          command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
+          # command: ["/mnt/openstack/bin/start-bootstrap.py"]
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}

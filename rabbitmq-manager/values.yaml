@@ -1,0 +1,9 @@
+rabbitmq:
+  connection_map:
+    common:
+      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq@domain_suffix:5672
+      user: openstack
+      password: openstackpass
+      host: openstack-rabbitmq.default.svc.cluster.local
+      port: 5672
+      vhost: ''

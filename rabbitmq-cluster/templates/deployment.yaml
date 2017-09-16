@@ -1,0 +1,56 @@
+{{- $name := .Release.Name }}
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ $name }}
+  labels:
+    app: "{{ $name }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  replicas: {{ .Values.replicas }}
+  template:
+    metadata:
+      name: {{ $name }}
+      labels:
+        app: "{{ $name }}"
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      serviceAccount: rabbitmq
+      nodeSelector:
+        openstack-controller: ""
+      containers:
+        - name: rabbitmq
+          command: ["/mnt/rabbitmq/bin/rabbitmq.sh", "start"]
+          # command: ["/mnt/openstack/bin/start-bootstrap.py"]
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          volumeMounts:
+            - name: {{ $name }}-bin
+              mountPath: /mnt/rabbitmq/bin
+            - name: {{ $name }}-etc
+              mountPath: /etc/rabbitmq
+            - name: rabbitmq-emptydir
+              mountPath: /var/lib/rabbitmq
+          readinessProbe:
+            timeoutSeconds: 20
+            exec:
+              command: ["/mnt/rabbitmq/bin/rabbitmq.sh", "readiness"]
+          livenessProbe:
+            initialDelaySeconds: 240
+            timeoutSeconds: 20
+            exec:
+              command: ["/mnt/rabbitmq/bin/rabbitmq.sh", "liveness"]
+      volumes:
+        - name: {{ $name }}-bin
+          configMap:
+            name: {{ $name }}-bin
+            defaultMode: 0755
+        - name: {{ $name }}-etc
+          configMap:
+            name: {{ $name }}-etc
+        - name: rabbitmq-emptydir
+          emptyDir: {}

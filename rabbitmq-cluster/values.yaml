@@ -1,0 +1,15 @@
+replicas: 3
+
+image:
+  repository: syunkitada/centos7-rabbitmq
+  tag: latest
+  pullPolicy: Always
+
+master: dummy
+
+vhost_map:
+  test:
+    policies:
+      - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+      - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues
+

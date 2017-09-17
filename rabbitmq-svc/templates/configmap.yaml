@@ -5,30 +5,5 @@ kind: ConfigMap
 metadata:
   name: {{ $name }}
 data:
-  master: {{ .Values.master }}
-
-
----
-
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ $name }}-bin
-data:
-  rabbitmq.sh: |+
-{{ tuple "bin/_rabbitmq.sh.tpl" . | include "funcs.template" | indent 4 }}
-
-
----
-
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: {{ $name }}-etc
-data:
-  rabbitmq-env.conf: |+
-{{ tuple "etc/_rabbitmq-env.conf.tpl" . | include "funcs.template" | indent 4 }}
-  rabbitmq.config: |+
-{{ tuple "etc/_rabbitmq.config.tpl" . | include "funcs.template" | indent 4 }}
+  selector: {{ .Values.selector }}
+  transport_url: {{ .Values.transport_url }}

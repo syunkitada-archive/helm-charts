@@ -1,4 +1,16 @@
+image:
+  repository: syunkitada/centos7-rabbitmq
+  tag: latest
+  pullPolicy: Always
+
 rabbitmq:
+  user_map:
+    admin:
+      user: openstack
+      pass: openstackpass
+    guest:
+      user: guest
+      pass: guestpass
   connection_map:
     common:
       transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq@domain_suffix:5672

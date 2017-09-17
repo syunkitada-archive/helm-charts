@@ -40,7 +40,7 @@ spec:
             exec:
               command: ["/mnt/rabbitmq/bin/rabbitmq.sh", "readiness"]
           livenessProbe:
-            initialDelaySeconds: 240
+            initialDelaySeconds: 500
             timeoutSeconds: 20
             exec:
               command: ["/mnt/rabbitmq/bin/rabbitmq.sh", "liveness"]

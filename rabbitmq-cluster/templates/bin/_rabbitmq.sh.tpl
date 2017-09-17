@@ -94,7 +94,7 @@ function start() {
     else
         if [ $HOSTNAME == $master ]; then
             ( \
-            sleep 100; \
+            sleep 180; \
             rabbitmqctl start_app; \
             sleep 2; \
             rabbitmqctl add_user $user $pass; \
@@ -115,7 +115,7 @@ function start() {
 
         else
             ( \
-            sleep 100; \
+            sleep 180; \
             rabbitmqctl stop_app; \
             sleep 2; \
             rabbitmqctl join_cluster rabbit@${master}; \

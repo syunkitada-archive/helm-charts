@@ -7,3 +7,15 @@ data:
 {{ tuple "etc/_grafana.ini.tpl" . | include "funcs.template" | indent 4 }}
   ldap.toml: |+
 {{ tuple "etc/_ldap.toml.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-bin
+data:
+  grafana.sh: |+
+{{ tuple "bin/_grafana.sh.tpl" . | include "funcs.template" | indent 4 }}

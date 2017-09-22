@@ -60,6 +60,10 @@ ingress:
     name: grafana
     backend: monitoring-grafana
     port: 80
+  prometheus:
+    name: prometheus
+    backend: monitoring-prometheus
+    port: 9090
 
 
 mysql:

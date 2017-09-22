@@ -1,4 +1,4 @@
 apiVersion: v1
 description: A Helm chart for Kubernetes
-name: monitoring
+name: openstack-monitoring
 version: 0.1.0

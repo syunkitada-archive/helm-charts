@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: openstack-manager
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: openstack-manager
+      labels:
+        app: openstack-manager
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: kubernetes-centos7-1.example.com
+      containers:
+        - name: openstack-manager
+          command: ["bash", "-c", "source /mnt/openstack/etc/adminrc && /opt/openstack-manager/bin/start-watchdog;"]
+          image: syunkitada/grafana:latest
+          ports:
+            - containerPort: 19999
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /opt
+              name: opt
+            - mountPath: /home
+              name: home
+            - mountPath: /etc
+              name: etc
+            - name: openstack-bin
+              mountPath: /mnt/openstack/bin
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+      volumes:
+        - name: opt
+          hostPath:
+            path: /opt
+        - name: home
+          hostPath:
+            path: /home
+        - name: etc
+          hostPath:
+            path: /etc
+        - name: openstack-bin
+          configMap:
+            name: openstack-bin
+            defaultMode: 0755
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

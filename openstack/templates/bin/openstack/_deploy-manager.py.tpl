@@ -4,7 +4,6 @@
 import re
 import subprocess
 import time
-import hashlib
 import os
 import util
 
@@ -70,7 +69,7 @@ def main():
                     'version': version,
                 }
             else:
-                if version != resource_map['version']:
+                if version != resource['version']:
                     util.execute('helm update {0} {1} -f {2}'.format(
                         resource_name, chart, VALUES_FILE
                     ))

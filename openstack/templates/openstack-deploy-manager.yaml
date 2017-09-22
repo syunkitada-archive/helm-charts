@@ -1,14 +1,14 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: openstack-controller
+  name: openstack-deploy-manager
   labels:
     chart: openstack
 spec:
   replicas: {{ .Values.replicaCount }}
   template:
     metadata:
-      name: openstack-controller
+      name: openstack-deploy-manager
       labels:
         chart: openstack
     spec:
@@ -18,9 +18,9 @@ spec:
       nodeSelector:
         openstack-controller: ""
       containers:
-        - name: openstack-controller
+        - name: openstack-deploy-manager
           # command: ["bash", "-c", "echo 'pre setup' && sleep 3600;"]
-          command: ["/mnt/openstack/bin/start-bootstrap.py"]
+          command: ["/mnt/openstack/bin/deploy-manager.py"]
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:

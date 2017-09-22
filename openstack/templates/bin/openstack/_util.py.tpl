@@ -2,6 +2,7 @@
 
 import os, stat
 import subprocess
+import hashlib
 from logging import getLogger, StreamHandler, DEBUG, Formatter
 
 

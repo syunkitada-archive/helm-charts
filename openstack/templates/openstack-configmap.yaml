@@ -24,8 +24,8 @@ metadata:
 data:
   util.py: |+
 {{ tuple "bin/openstack/_util.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
-  start-bootstrap.py: |+
-{{ tuple "bin/openstack/_start-bootstrap.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+  deploy-manager.py: |+
+{{ tuple "bin/openstack/_deploy-manager.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-00-common.sh: |+
 {{ tuple "bin/openstack/bootstrap/_common.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-01-mysql.sh: |+

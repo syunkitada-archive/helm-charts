@@ -23,6 +23,8 @@ spec:
           image: prom/prometheus:v1.4.0
           args:
             - -config.file=/mnt/etc/prometheus.yml
+            - -web.external-url=https://kubeapi.k8s.example.com:6443/api/v1/namespaces/kube-system/services/monitoring-prometheus/proxy
+            - -web.route-prefix=/
           ports:
             - containerPort: 9090
           volumeMounts:

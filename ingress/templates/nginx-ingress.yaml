@@ -51,3 +51,4 @@ spec:
         args:
         - /nginx-ingress-controller
         - --default-backend-service=$(POD_NAMESPACE)/default-http-backend
+        - --configmap={{ .Release.Namespace }}/nginx-ingress-controller

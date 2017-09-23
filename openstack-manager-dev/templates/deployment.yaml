@@ -14,12 +14,13 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '19999'
     spec:
+      serviceAccount: openstack
       nodeSelector:
         kubernetes.io/hostname: kubernetes-centos7-1.example.com
       containers:
         - name: openstack-manager
           command: ["bash", "-c", "source /mnt/openstack/etc/adminrc && /opt/openstack-manager/bin/start-watchdog;"]
-          image: syunkitada/grafana:latest
+          image: syunkitada/centos7-openstack-all:pike
           ports:
             - containerPort: 19999
               protocol: TCP

@@ -1,11 +1,11 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
+  name: kubernetes-dashboard
+  namespace: kube-system
   labels:
     k8s-app: kubernetes-dashboard
     kubernetes.io/cluster-service: "true"
-  name: kubernetes-dashboard
-  namespace: kube-system
 spec:
   ports:
     - port: 80

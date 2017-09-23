@@ -9,6 +9,10 @@ spec:
       name: openstack-manager
       labels:
         app: openstack-manager
+        openstack_prometheus: ""
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '19999'
     spec:
       nodeSelector:
         kubernetes.io/hostname: kubernetes-centos7-1.example.com

@@ -9,7 +9,10 @@ spec:
       name: monitoring-prometheus
       labels:
         app: monitoring-prometheus
+      annotations:
+        prometheus-configmap: {{ tuple "prometheus-configmap.yaml" . | include "funcs.hash" }}
     spec:
+      serviceAccount: openstack
       containers:
         - name: monitoring-prometheus
           image: prom/prometheus:v1.4.0

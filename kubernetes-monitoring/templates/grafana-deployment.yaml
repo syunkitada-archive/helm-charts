@@ -1,0 +1,55 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: monitoring-grafana
+  namespace: kube-system
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: monitoring-grafana
+      labels:
+        task: monitoring
+        k8s-app: grafana
+      annotations:
+        grafana-configmap: {{ tuple "grafana-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      volumes:
+        - name: grafana-storage
+          emptyDir: {}
+      containers:
+        - name: grafana
+          command: ["/mnt/grafana/bin/grafana.sh", "start"]
+          image: syunkitada/grafana:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var
+              name: grafana-storage
+          env:
+            - name: INFLUXDB_HOST
+              value: monitoring-influxdb
+            - name: GRAFANA_PORT
+              value: "3000"
+            - name: GF_AUTH_BASIC_ENABLED
+              value: "false"
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_ANONYMOUS_ORG_ROLE
+              value: Admin
+            - name: GF_SERVER_ROOT_URL
+              value: /api/v1/namespaces/kube-system/services/monitoring-grafana/proxy/
+          volumeMounts:
+            - name: grafana-etc
+              mountPath: /etc/grafana
+            - name: grafana-bin
+              mountPath: /mnt/grafana/bin
+      volumes:
+        - name: grafana-etc
+          configMap:
+            name: grafana-etc
+        - name: grafana-bin
+          configMap:
+            name: grafana-bin
+            defaultMode: 0755

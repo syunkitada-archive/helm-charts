@@ -20,7 +20,7 @@ spec:
       containers:
         - name: grafana
           command: ["/mnt/grafana/bin/grafana.sh", "start"]
-          image: syunkitada/grafana:latest
+          image: syunkitada/centos7-grafana:latest
           ports:
             - containerPort: 3000
               protocol: TCP

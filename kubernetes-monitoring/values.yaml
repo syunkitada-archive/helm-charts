@@ -1,0 +1,5 @@
+influxdb:
+  image: syunkitada/centos7-influxdb:latest
+  dbs: [k8s, openstack]
+  root_user: root
+  root_pass: rootpass

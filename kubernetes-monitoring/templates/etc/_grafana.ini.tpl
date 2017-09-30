@@ -219,7 +219,7 @@ disable_signout_menu = false
 #################################### Anonymous Auth ######################
 [auth.anonymous]
 # enable anonymous access
-enabled = false
+enabled = true
 
 # specify organization name that should be used for unauthenticated users
 org_name = Main Org.

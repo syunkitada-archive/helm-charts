@@ -1,6 +1,7 @@
 #!/bin/bash -xe
+{{- $influxdb := .Values.influxdb }}
 
-echo 'Starting nova'
+echo 'Starting grafana'
 
 COMMAND="${@:-start}"
 
@@ -27,8 +28,8 @@ function start(){
     INFLUXDB_HOST=${INFLUXDB_HOST:-"monitoring-influxdb"}
     INFLUXDB_PORT=${INFLUXDB_PORT:-8086}
     INFLUXDB_DATABASE=${INFLUXDB_DATABASE:-k8s}
-    INFLUXDB_PASSWORD=${INFLUXDB_PASSWORD:-root}
-    INFLUXDB_USER=${INFLUXDB_USER:-root}
+    INFLUXDB_PASSWORD={{ $influxdb.root_pass }}
+    INFLUXDB_USER={{ $influxdb.root_user }}
     INFLUXDB_SERVICE_URL=${INFLUXDB_SERVICE_URL}
     if [ -n "$INFLUXDB_SERVICE_URL" ]; then
       echo "Influxdb service URL is provided."

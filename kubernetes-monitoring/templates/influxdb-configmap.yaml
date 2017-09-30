@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: influxdb-bin
+  namespace: kube-system
+data:
+  influxdb.sh: |+
+{{ tuple "bin/_influxdb.sh.tpl" . | include "funcs.template" | indent 4 }}
+
+
+---
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: influxdb-etc
+  namespace: kube-system
+data:
+  influxdb.conf: |+
+{{ tuple "etc/_influxdb.conf.tpl" . | include "funcs.template" | indent 4 }}

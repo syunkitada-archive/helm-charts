@@ -1,5 +1,17 @@
 influxdb:
   image: syunkitada/centos7-influxdb:latest
-  dbs: [k8s, openstack]
+  db_map:
+    k8s:
+      duration: 2h
+    openstack:
+      duration: 2h
   root_user: root
   root_pass: rootpass
+
+heapster:
+  image: gcr.io/google_containers/heapster-amd64:v1.5.0-beta.0
+  influxdb:
+    retention: 1d
+
+addon_resizer:
+  image: gcr.io/google_containers/addon-resizer:1.7

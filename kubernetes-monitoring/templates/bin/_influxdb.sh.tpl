@@ -18,8 +18,9 @@ function start(){
     echo "InfluxDB is up and running."
 
     influx -execute "CREATE USER {{ $influxdb.root_user }} WITH PASSWORD '{{ $influxdb.root_password }}' WITH ALL PRIVILEGES;"
-    {{- range $influxdb.dbs }}
-    influx -execute "CREATE DATABASE {{ . }};"
+    {{- range $db_name, $db := $influxdb.dbs }}
+    influx -execute "CREATE DATABASE {{ $db_name }};"
+    influx -execute "CREATE RETENTION POLICY auto ON {{ $db_name }} DURATION {{ $db.duration }} REPLICATION 1 DEFAULT;"
     {{- end }}
     # sed -i 's/auth-enabled =.*/auth-enabled = true/g' /etc/influxdb/influxdb.conf
     sed -i 's/bind-address = "127.0.0.1:8088"/bind-address = "0.0.0.0:8088"/g' /etc/influxdb/influxdb.conf

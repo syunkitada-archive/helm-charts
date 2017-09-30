@@ -1,4 +1,6 @@
 {{- $influxdb := .Values.influxdb }}
+{{- $heapster := .Values.heapster }}
+{{- $addon_resizer := .Values.addon_resizer }}
 {{- $base_metrics_memory := "140Mi" }}
 {{- $base_metrics_cpu := "80m" }}
 {{- $base_eventer_memory := "190Mi" }}
@@ -34,8 +36,8 @@ spec:
         scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
       containers:
-        - image: gcr.io/google_containers/heapster-amd64:v1.5.0-beta.0
-          name: heapster
+        - name: heapster
+          image: {{ $heapster.image }}
           livenessProbe:
             httpGet:
               path: /healthz
@@ -46,13 +48,13 @@ spec:
           command:
             - /heapster
             - --source=kubernetes.summary_api:''
-            - --sink=influxdb:http://monitoring-influxdb:8086?user={{ $influxdb.root_user }},pw={{ $influxdb.root_pass }},db=k8s,retention=1d
-        - image: gcr.io/google_containers/heapster-amd64:v1.5.0-beta.0
-          name: eventer
+            - --sink=influxdb:http://monitoring-influxdb:8086?user={{ $influxdb.root_user }},pw={{ $influxdb.root_pass }},db=k8s
+        - name: eventer
+          image: {{ $heapster.image }}
           command:
             - /eventer
             - --source=kubernetes:''
-            - --sink=influxdb:http://monitoring-influxdb:8086?user={{ $influxdb.root_user }},pw={{ $influxdb.root_pass }},db=k8s,retention=1d
+            - --sink=influxdb:http://monitoring-influxdb:8086?user={{ $influxdb.root_user }},pw={{ $influxdb.root_pass }},db=k8s
         - image: gcr.io/google_containers/addon-resizer:1.7
           name: heapster-nanny
           resources:
@@ -82,8 +84,8 @@ spec:
             - --container=heapster
             - --poll-period=300000
             - --estimator=exponential
-        - image: gcr.io/google_containers/addon-resizer:1.7
-          name: eventer-nanny
+        - name: eventer-nanny
+          image: {{ $addon_resizer.image }}
           resources:
             limits:
               cpu: 50m

@@ -1,15 +1,16 @@
-replicas: 3
-
-image:
-  repository: syunkitada/centos7-rabbitmq
-  tag: latest
-  pullPolicy: Always
-
-master: dummy
-
-vhost_map:
-  test:
-    policies:
-      - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
-      - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues
-
+rabbitmq:
+  image:
+    repository: syunkitada/centos7-rabbitmq
+    tag: latest
+    pullPolicy: Always
+  replicas: 3
+  user: openstack
+  password: openstckpass
+  ro_user: guest
+  ro_password: guestpass
+  master: dummy
+  vhost_map:
+    test:
+      policies:
+        - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+        - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues

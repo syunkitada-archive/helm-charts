@@ -1,11 +1,12 @@
 {{- $name := .Release.Name }}
+{{- $rabbitmq := .Values.rabbitmq }}
 
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ $name }}
 data:
-  master: {{ .Values.master }}
+  master: {{ $rabbitmq.master }}
 
 
 ---

@@ -1,5 +1,6 @@
 #!/bin/bash -xe
 {{- $name := .Release.Name }}
+{{- $rabbitmq := .Values.rabbitmq }}
 
 COMMNAD="${@:-help}"
 HOSTNAME=`hostname`
@@ -12,7 +13,7 @@ function help() {
 
 function _init_master() {
     nodes=`kubectl get pod -l app={{ $name }} | grep Running | awk '{print $1}'`
-    if [ `echo "$nodes" | wc -l` == {{ .Values.replicas }} ]; then
+    if [ `echo "$nodes" | wc -l` == {{ $rabbitmq.replicas }} ]; then
         tmp_master=`echo "$nodes" | head -n 1`
         kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
     fi
@@ -21,7 +22,7 @@ function _init_master() {
 
 function _change_master() {
     nodes=`kubectl get pod -l app={{ $name }} | grep Running | awk '{print $1}'`
-    if [ `echo "$nodes" | wc -l` == {{ .Values.replicas }} ]; then
+    if [ `echo "$nodes" | wc -l` == {{ $rabbitmq.replicas }} ]; then
         tmp_master=`echo "$nodes" | grep -v $HOSTNAME | head -n 1`
         kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
     fi
@@ -72,11 +73,11 @@ function _set_master() {
 function start() {
     _set_master
 
-    rouser=guest
-    ropass=guestpass
-    user=openstack
-    pass=openstackpass
-    cookie=hello
+    rouser={{ $rabbitmq.ro_user }}
+    ropass={{ $rabbitmq.ro_password }}
+    user={{ $rabbitmq.user }}
+    pass={{ $rabbitmq.password }}
+    cookie={{ $name }}{{ $rabbitmq.ro_password }}
     tags=administrator
 
     echo $cookie > var/lib/rabbitmq/.erlang.cookie
@@ -94,7 +95,7 @@ function start() {
     else
         if [ $HOSTNAME == $master ]; then
             ( \
-            sleep 180; \
+            sleep 120; \
             rabbitmqctl start_app; \
             sleep 2; \
             rabbitmqctl add_user $user $pass; \
@@ -102,7 +103,7 @@ function start() {
             rabbitmqctl add_user $rouser $ropass; \
             rabbitmqctl set_user_tags $rouser $tags; \
             rabbitmqctl delete_user guest; \
-            {{- range $vhost_name, $vhost := .Values.vhost_map }}
+            {{- range $vhost_name, $vhost := $rabbitmq.vhost_map }}
             rabbitmqctl add_vhost {{ $vhost_name }}; \
             rabbitmqctl set_permissions -p {{ $vhost_name }} $user '.*' '.*' '.*'; \
             rabbitmqctl set_permissions -p {{ $vhost_name }} $rouser '' '' '.*'; \
@@ -115,7 +116,7 @@ function start() {
 
         else
             ( \
-            sleep 180; \
+            sleep 120; \
             rabbitmqctl stop_app; \
             sleep 2; \
             rabbitmqctl join_cluster rabbit@${master}; \

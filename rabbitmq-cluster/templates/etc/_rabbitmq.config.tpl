@@ -21,7 +21,7 @@
    {mirroring_sync_batch_size, 4096},
    {cluster_keepalive_interval, 10000},
    {collect_statistics_interval, 50000},
-   {hipe_compile, true},
+   {hipe_compile, false},
    {mnesia_table_loading_retry_limit, 10},
    {mnesia_table_loading_retry_timeout, 30000},
    {queue_index_embed_msgs_below, 4096}

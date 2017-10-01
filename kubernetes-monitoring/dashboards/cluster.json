@@ -18,7 +18,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -215,7 +215,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -422,7 +422,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -655,7 +655,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -889,7 +889,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -1153,7 +1153,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -1433,7 +1433,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -1579,7 +1579,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -1739,7 +1739,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -1911,7 +1911,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -2057,7 +2057,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -2215,7 +2215,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -2424,7 +2424,7 @@
             "text": "kubernetes-minion-hly9",
             "value": "kubernetes-minion-hly9"
           },
-          "datasource": null,
+          "datasource": "influxdb-k8s-datasource",
           "includeAll": false,
           "multi": false,
           "multiFormat": "glob",

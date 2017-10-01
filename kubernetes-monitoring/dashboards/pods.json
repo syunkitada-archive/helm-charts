@@ -18,7 +18,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -264,7 +264,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -572,7 +572,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -744,7 +744,7 @@
           {
             "aliasColors": {},
             "bars": false,
-            "datasource": null,
+            "datasource": "influxdb-k8s-datasource",
             "editable": true,
             "error": false,
             "fill": 1,
@@ -956,7 +956,7 @@
             "text": "kube-system",
             "value": "kube-system"
           },
-          "datasource": null,
+          "datasource": "influxdb-k8s-datasource",
           "includeAll": false,
           "multi": false,
           "multiFormat": "glob",
@@ -984,7 +984,7 @@
             "value": "heapster-v19-33x3r",
             "tags": []
           },
-          "datasource": null,
+          "datasource": "influxdb-k8s-datasource",
           "includeAll": false,
           "multi": false,
           "multiFormat": "glob",

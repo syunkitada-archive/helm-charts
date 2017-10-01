@@ -18,7 +18,7 @@ function start(){
     echo "InfluxDB is up and running."
 
     influx -execute "CREATE USER {{ $influxdb.root_user }} WITH PASSWORD '{{ $influxdb.root_password }}' WITH ALL PRIVILEGES;"
-    {{- range $db_name, $db := $influxdb.dbs }}
+    {{- range $db_name, $db := $influxdb.db_map }}
     influx -execute "CREATE DATABASE {{ $db_name }};"
     influx -execute "CREATE RETENTION POLICY auto ON {{ $db_name }} DURATION {{ $db.duration }} REPLICATION 1 DEFAULT;"
     {{- end }}

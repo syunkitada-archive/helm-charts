@@ -78,11 +78,18 @@ mysql:
 
 
 rabbitmq:
-  connection_map:
-    common:
-      transport_url: rabbit://openstack:openstackpass@openstack-rabbitmq@domain_suffix:5672
-      user: openstack
-      password: openstackpass
-      host: openstack-rabbitmq.default.svc.cluster.local
-      port: 5672
-      vhost: ''
+  image:
+    repository: syunkitada/centos7-rabbitmq
+    tag: latest
+    pullPolicy: Always
+  replicas: 3
+  user: openstack
+  password: openstckpass
+  ro_user: guest
+  ro_password: guestpass
+  master: dummy
+  vhost_map:
+    test:
+      policies:
+        - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+        - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues

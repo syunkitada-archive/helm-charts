@@ -65,19 +65,20 @@ function start(){
     done
     echo "Grafana is up and running."
 
-
+    {{- range $db_name, $db := $influxdb.db_map }}
     echo "Creating default influxdb datasource..."
     curl -k -i -XPOST -H "${HEADER_ACCEPT}" -H "${HEADER_CONTENT_TYPE}" "${GF_SERVER_PROTOCOL}://${GRAFANA_USER}:${GRAFANA_PASSWD}@localhost:${GRAFANA_PORT}/api/datasources" -d '
     {
-      "name": "influxdb-datasource",
+      "name": "influxdb-{{ $db_name }}-datasource",
       "type": "influxdb",
       "access": "'"${BACKEND_ACCESS_MODE}"'",
-      "isDefault": true,
       "url": "'"${INFLUXDB_SERVICE_URL}"'",
       "password": "'"${INFLUXDB_PASSWORD}"'",
       "user": "'"${INFLUXDB_USER}"'",
-      "database": "'"${INFLUXDB_DATABASE}"'"
+      "database": "'"{{ $db_name }}"'"
     }'
+    {{- end }}
+
 
     echo "Creating prometheus datasource..."
     curl -k -i -XPOST -H "${HEADER_ACCEPT}" -H "${HEADER_CONTENT_TYPE}" "${GF_SERVER_PROTOCOL}://${GRAFANA_USER}:${GRAFANA_PASSWD}@localhost:${GRAFANA_PORT}/api/datasources" -d '

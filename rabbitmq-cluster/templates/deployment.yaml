@@ -1,4 +1,5 @@
 {{- $name := .Release.Name }}
+{{- $rabbitmq := .Values.rabbitmq }}
 
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -8,7 +9,7 @@ metadata:
     app: "{{ $name }}"
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: {{ $rabbitmq.replicas }}
   template:
     metadata:
       name: {{ $name }}
@@ -18,13 +19,13 @@ spec:
     spec:
       serviceAccount: rabbitmq
       nodeSelector:
-        openstack-controller: ""
+        rabbitmq-node: enable
       containers:
         - name: rabbitmq
           command: ["/mnt/rabbitmq/bin/rabbitmq.sh", "start"]
           # command: ["/mnt/openstack/bin/start-bootstrap.py"]
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ $rabbitmq.image.repository }}:{{ $rabbitmq.image.tag }}"
+          imagePullPolicy: {{ $rabbitmq.image.pullPolicy }}
           ports:
             - containerPort: 5672
             - containerPort: 15672

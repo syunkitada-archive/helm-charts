@@ -3,7 +3,7 @@
 source /mnt/openstack/etc/adminrc
 
 helm get openstack-glance \
-    || helm install charts/glance \
+    || helm install {{ .Values.chart_prefix }}/glance \
         --name openstack-glance --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml
 
 kubectl get cm glance-etc -o jsonpath='{.data.glance-api\.conf}' > /etc/glance/glance-api.conf

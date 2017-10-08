@@ -3,7 +3,7 @@
 source /mnt/openstack/etc/adminrc
 
 helm get openstack-neutron \
-    || helm install charts/neutron \
+    || helm install {{ .Values.chart_prefix }}/neutron \
         --name openstack-neutron --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml
 
 kubectl get cm neutron-etc -o jsonpath='{.data.neutron\.conf}' > /etc/neutron/neutron.conf

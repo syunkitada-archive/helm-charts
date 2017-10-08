@@ -16,7 +16,8 @@ spec:
     spec:
       serviceAccount: openstack
       nodeSelector:
-        openstack-controller: ""
+        openstack-controller: enable
+        openstack-region: {{ .Values.openstack.region }}
       containers:
         - name: nova
           securityContext:

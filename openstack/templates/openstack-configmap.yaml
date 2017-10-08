@@ -1,6 +1,7 @@
 {{- $domain_suffix := print "." .Release.Namespace ".svc.cluster.local" }}
 {{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -22,25 +23,19 @@ kind: ConfigMap
 metadata:
   name: openstack-bin
 data:
-  util.py: |+
-{{ tuple "bin/openstack/_util.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
-  deploy-manager.py: |+
-{{ tuple "bin/openstack/_deploy-manager.py.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-00-common.sh: |+
-{{ tuple "bin/openstack/bootstrap/_common.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/bootstrap/_common.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-01-mysql.sh: |+
-{{ tuple "bin/openstack/bootstrap/_mysql.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/bootstrap/_mysql.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-02-memcached.sh: |+
-{{ tuple "bin/openstack/bootstrap/_memcached.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
-  bootstrap-03-rabbitmq.sh: |+
-{{ tuple "bin/openstack/bootstrap/_rabbitmq.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/bootstrap/_memcached.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-10-keystone.sh: |+
-{{ tuple "bin/openstack/bootstrap/_keystone.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
+{{ tuple "bin/bootstrap/_keystone.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   bootstrap-11-glance.sh: |+
-{{ tuple "bin/openstack/bootstrap/_glance.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/bootstrap/_glance.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-12-nova.sh: |+
-{{ tuple "bin/openstack/bootstrap/_nova.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/bootstrap/_nova.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-13-neutron.sh: |+
-{{ tuple "bin/openstack/bootstrap/_neutron.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/bootstrap/_neutron.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-20-horizon.sh: |+
-{{ tuple "bin/openstack/bootstrap/_horizon.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
+{{ tuple "bin/bootstrap/_horizon.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}

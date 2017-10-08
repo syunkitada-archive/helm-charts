@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: openstack-manager-etc
+data:
+  openstack_manager.conf: |+
+{{ tuple "etc/_openstack_manager.conf.tpl" . | include "funcs.template" | indent 4 }}

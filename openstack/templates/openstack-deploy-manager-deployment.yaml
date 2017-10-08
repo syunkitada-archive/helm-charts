@@ -1,0 +1,69 @@
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack_manager" }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: openstack-deploy-manager
+  labels:
+    chart: openstack
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: openstack-deploy-manager
+      labels:
+        chart: openstack
+      annotations:
+        openstack-manager-configmap: {{ tuple "openstack-manager-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirst
+      serviceAccount: openstack
+      nodeSelector:
+        openstack-controller: enable
+        openstack-region: {{ $openstack.region }}
+        {{- if .Values.is_develop }}
+        develop-node: "enable"
+        {{- end }}
+      containers:
+        - name: openstack-deploy-manager
+          {{- if .Values.is_develop }}
+          command: ["/opt/openstack-manager/bin/openstack-deploy-manager-watchdog"]
+          # command: ["bash", "-c", "sleep 3600"]
+          {{- else }}
+          command: ["/opt/openstack-manager/bin/openstack-deploy-manager"]
+          {{- end }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
+          volumeMounts:
+            - name: openstack-bin
+              mountPath: /mnt/openstack/bin
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+            - name: openstack-manager-etc
+              mountPath: /etc/openstack_manager
+            {{- if .Values.is_develop }}
+            - name: opt-openstack-manager
+              mountPath: /opt/openstack-manager
+            - name: home
+              mountPath: /home
+            {{- end }}
+      volumes:
+        - name: openstack-bin
+          configMap:
+            name: openstack-bin
+            defaultMode: 0755
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc
+        - name: openstack-manager-etc
+          configMap:
+            name: openstack-manager-etc
+        {{- if .Values.is_develop }}
+        - name: opt-openstack-manager
+          hostPath:
+            path: /opt/openstack-manager
+        - name: home
+          hostPath:
+            path: /home
+        {{- end }}

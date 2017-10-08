@@ -32,7 +32,8 @@ spec:
           ]'
     spec:
       nodeSelector:
-        openstack-controller: ""
+        openstack-controller: enable
+        openstack-region: {{ .Values.openstack.region }}
       containers:
       - name: {{ template "fullname" . }}
         image: "{{ .Values.image }}"

@@ -3,7 +3,7 @@
 source /mnt/openstack/etc/adminrc
 
 helm get openstack-nova \
-    || helm install charts/nova \
+    || helm install {{ .Values.chart_prefix }}/nova \
         --name openstack-nova --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml
 
 kubectl get cm nova-etc -o jsonpath='{.data.nova\.conf}' > /etc/nova/nova.conf

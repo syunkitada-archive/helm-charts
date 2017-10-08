@@ -1,9 +1,0 @@
-chart:
-  glance:
-    replica_count: 1
-    probes_delay: 30
-    probes_timeout: 30
-    image:
-      repository: syunkitada/centos7-openstack-all
-      tag: pike
-      pullPolicy: Always

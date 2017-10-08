@@ -48,10 +48,23 @@ kubectl create secret tls tls-ingress --key server.key --cert server.crt -n open
 
 ### set label
 ```
-kubectl label nodes kubernetes-centos7-1.example.com ingress-controller=
-kubectl label nodes kubernetes-centos7-1.example.com openstack-controller=
-kubectl label nodes kubernetes-centos7-2.example.com openstack-controller=
-kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=
+kubectl label nodes kubernetes-centos7-1.example.com ingress-controller=enable
+
+kubectl label nodes kubernetes-centos7-1.example.com rabbitmq-node=enable
+kubectl label nodes kubernetes-centos7-2.example.com rabbitmq-node=enable
+kubectl label nodes kubernetes-centos7-3.example.com rabbitmq-node=enable
+
+kubectl label nodes kubernetes-centos7-1.example.com openstack-region=openstack
+kubectl label nodes kubernetes-centos7-2.example.com openstack-region=openstack
+kubectl label nodes kubernetes-centos7-3.example.com openstack-region=openstack
+
+kubectl label nodes kubernetes-centos7-1.example.com openstack-controller=enable
+kubectl label nodes kubernetes-centos7-2.example.com openstack-controller=enable
+kubectl label nodes kubernetes-centos7-3.example.com openstack-controller=enable
+
+kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=enable
+
+kubectl label nodes kubernetes-centos7-1.example.com develop-node=enable
 ```
 
 
@@ -71,9 +84,11 @@ helm install charts/openstack --name openstack --namespace openstack -f values.y
 
 
 # Design
-
-* 各ノードを役割に応じて抽象化しラベルを振る
+* 各ノードを役割に応じてラベルを振る
   * controller, compute, net-node, block-storage, object-storage, database
+  * Kubernetesは各regionで共有することを前提する
+      openstack-region=openstack
+
 * controller nodes
   * ステートレスなノード群
   * ingress, service, deploymentリソースによりAPIを構成するノード群

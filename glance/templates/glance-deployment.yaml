@@ -16,7 +16,8 @@ spec:
     spec:
       serviceAccount: openstack
       nodeSelector:
-        openstack-controller: ""
+        openstack-controller: enable
+        openstack-region: {{ .Values.openstack.region }}
       containers:
         - name: glance-api
           command: ["/mnt/glance/bin/glance.sh", "start_api"]

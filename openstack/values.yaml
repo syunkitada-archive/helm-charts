@@ -1,13 +1,11 @@
-replicaCount: 1
-image:
-  repository: syunkitada/centos7-openstack-all
-  tag: pike
-  pullPolicy: Always
-
+is_develop: false
+chart_repo: https://syunkitada.github.io/chartrepo/charts
+chart_prefix: charts
 
 openstack:
   debug: true
-  region: RegionOne
+  version: pike
+  region: openstack
   http_protocol: https
   ingress_suffix: .k8s.example.com
   ingress_vip: 172.16.100.130
@@ -105,3 +103,12 @@ rabbitmq:
       policies:
         - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
         - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues
+
+image_map:
+  pike:
+    openstack_manager:
+        repository: syunkitada/centos7-openstack-all:pike
+        pull_policy: Always
+    openstack:
+        repository: syunkitada/centos7-openstack-all:pike
+        pull_policy: Always

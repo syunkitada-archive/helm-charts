@@ -19,7 +19,8 @@ spec:
         heritage: "{{ .Release.Service }}"
     spec:
       nodeSelector:
-        openstack-controller: ""
+        openstack-controller: enable
+        openstack-region: {{ .Values.openstack.region }}
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

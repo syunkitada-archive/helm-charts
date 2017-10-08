@@ -82,6 +82,12 @@ vim values.yaml
 helm install charts/openstack --name openstack --namespace openstack -f values.yaml
 ```
 
+## Develop
+```
+# Install openstack for develop
+helm upgrade openstack openstack -f openstack/values.yaml --set is_develop=true,chart_prefix=/home/fabric/openstack-helm
+```
+
 
 # Design
 * 各ノードを役割に応じてラベルを振る

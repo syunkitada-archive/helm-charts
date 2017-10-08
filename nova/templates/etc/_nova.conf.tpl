@@ -3,11 +3,10 @@
 {{- $service_user := .Values.openstack.user_map.service }}
 {{- $openstack := .Values.openstack }}
 {{- $db := .Values.mysql.database_map.common }}
-{{- $transport_url := .Values.rabbitmq.connection_map.common.transport_url }}
 
 [DEFAULT]
 debug = {{ $openstack.debug | default "false" }}
-transport_url = {{ $transport_url }}
+transport_url = @transport_url
 use_neutron = True
 firewall_driver = nova.virt.firewall.NoopFirewallDriver
 compute_driver = libvirt.LibvirtDriver

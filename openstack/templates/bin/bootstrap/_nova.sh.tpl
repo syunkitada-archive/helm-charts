@@ -7,6 +7,8 @@ helm get openstack-nova \
         --name openstack-nova --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml
 
 kubectl get cm nova-etc -o jsonpath='{.data.nova\.conf}' > /etc/nova/nova.conf
+transport_url=`kubectl get cm rabbitmq-svc-common -o jsonpath='{.data.transport_url}'`
+sed -i "s/@transport_url/$transport_url/g" /etc/nova/nova.conf
 
 /opt/nova/bin/nova-manage api_db sync
 

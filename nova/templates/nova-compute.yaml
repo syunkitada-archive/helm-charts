@@ -1,4 +1,5 @@
 {{- $nova := .Values.chart.nova }}
+
 apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
@@ -19,7 +20,8 @@ spec:
       hostNetwork: true
       hostPID: true
       nodeSelector:
-        openstack-compute: ""
+        openstack-compute: enable
+        openstack-region: {{ .Values.openstack.region }}
       containers:
         - name: nova-compute
           command: ["/mnt/nova/bin/nova.sh", "start_compute"]

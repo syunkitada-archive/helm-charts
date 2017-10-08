@@ -10,6 +10,9 @@ function bootstrap() {
     source /mnt/openstack/etc/resolvrc
     mkdir -p /var/lib/nova/instances
     cp /mnt/nova/etc/nova.conf /etc/nova/
+
+    transport_url=`kubectl get cm rabbitmq-svc-common -o jsonpath='{.data.transport_url}'`
+    sed -i "s/@transport_url/$transport_url/g" /etc/nova/nova.conf
 }
 
 

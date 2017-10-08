@@ -2,7 +2,6 @@
 {{- $ingress_suffix := .Values.openstack.ingress_suffix }}
 {{- $service_user := .Values.openstack.user_map.service }}
 {{- $db := .Values.mysql.database_map.common }}
-{{- $transport_url := .Values.rabbitmq.connection_map.common.transport_url }}
 
 [DEFAULT]
 debug = true
@@ -11,7 +10,7 @@ service_plugins =
 auth_strategy = keystone
 notify_nova_on_port_status_changes = true
 notify_nova_on_port_data_changes = true
-transport_url = {{ $transport_url }}
+transport_url = @transport_url
 
 api_workers = 2
 rpc_workers = 1

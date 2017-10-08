@@ -11,6 +11,9 @@ function bootstrap() {
     cp /mnt/neutron/etc/neutron.conf /etc/neutron/
     cp /mnt/neutron/etc/ml2_conf.ini /etc/neutron/
     cp /mnt/neutron/etc/linuxbridge_agent.ini /etc/neutron/
+
+    transport_url=`kubectl get cm rabbitmq-svc-common -o jsonpath='{.data.transport_url}'`
+    sed -i "s/@transport_url/$transport_url/g" /etc/neutron/neutron.conf
 }
 
 

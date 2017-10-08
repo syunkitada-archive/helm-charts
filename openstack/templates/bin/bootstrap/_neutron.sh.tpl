@@ -7,6 +7,8 @@ helm get openstack-neutron \
         --name openstack-neutron --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml
 
 kubectl get cm neutron-etc -o jsonpath='{.data.neutron\.conf}' > /etc/neutron/neutron.conf
+transport_url=`kubectl get cm rabbitmq-svc-common -o jsonpath='{.data.transport_url}'`
+sed -i "s/@transport_url/$transport_url/g" /etc/nova/nova.conf
 
 /opt/neutron/bin/neutron-db-manage --config-file /etc/neutron/neutron.conf upgrade head
 

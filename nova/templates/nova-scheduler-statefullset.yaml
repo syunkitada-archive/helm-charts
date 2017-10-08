@@ -1,0 +1,47 @@
+{{- $nova := .Values.chart.nova }}
+
+apiVersion: apps/v1beta1
+kind: StatefulSet
+metadata:
+  name: nova-scheduler
+  labels:
+    chart: nova
+spec:
+  serviceName: nova-scheduler
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      labels:
+        app: nova-scheduler
+      annotations:
+        nova-configmap: {{ tuple "nova-configmap.yaml" . | include "funcs.hash" }}
+    spec:
+      serviceAccount: openstack
+      nodeSelector:
+        openstack-controller: enable
+        openstack-region: {{ .Values.openstack.region }}
+      containers:
+        - name: nova-scheduler
+          command: ["/mnt/nova/bin/nova.sh", "start_scheduler"]
+          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
+          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          volumeMounts:
+            - name: nova-bin
+              mountPath: /mnt/nova/bin
+            - name: nova-etc
+              mountPath: /mnt/nova/etc
+            - name: openstack-etc
+              mountPath: /mnt/openstack/etc
+      volumes:
+        - name: nova-bin
+          configMap:
+            name: nova-bin
+            defaultMode: 0755
+        - name: nova-etc
+          configMap:
+            name: nova-etc
+        - name: openstack-etc
+          configMap:
+            name: openstack-etc

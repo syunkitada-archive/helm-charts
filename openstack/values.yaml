@@ -84,12 +84,24 @@ rabbitmq:
     pullPolicy: Always
   replicas: 3
   user: openstack
-  password: openstckpass
-  ro_user: guest
-  ro_password: guestpass
+  password: openstackpass
+  ro_user: openstackro
+  ro_password: openstackropass
   master: dummy
   vhost_map:
     test:
+      policies:
+        - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+        - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues
+    nova:
+      policies:
+        - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+        - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues
+    neutron:
+      policies:
+        - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
+        - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues
+    common:
       policies:
         - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
         - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues

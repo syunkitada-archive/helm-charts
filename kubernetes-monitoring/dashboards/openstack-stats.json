@@ -944,6 +944,7 @@
         "30d"
       ]
     },
+    "refresh": "1m",
     "timezone": "browser",
     "title": "OpenStack Stats",
     "version": 0

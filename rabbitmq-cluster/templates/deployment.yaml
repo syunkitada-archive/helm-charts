@@ -20,6 +20,16 @@ spec:
       serviceAccount: rabbitmq
       nodeSelector:
         rabbitmq-node: enable
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                 - key: app
+                   operator: In
+                   values:
+                     - {{ $name }}
+              topologyKey: kubernetes.io/hostname
       containers:
         - name: rabbitmq
           command: ["/mnt/rabbitmq/bin/rabbitmq.sh", "start"]

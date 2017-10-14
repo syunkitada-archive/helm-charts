@@ -21,7 +21,7 @@ function _init_master() {
 
 
 function _change_master() {
-    nodes=`kubectl get pod -l app={{ $name }} | grep Running | awk '{print $1}'`
+    nodes=`kubectl get pod -l app={{ $name }} | grep Running | grep ' 1/1 ' | awk '{print $1}'`
     if [ `echo "$nodes" | wc -l` == {{ $rabbitmq.replicas }} ]; then
         tmp_master=`echo "$nodes" | grep -v $HOSTNAME | head -n 1`
         kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
@@ -90,46 +90,58 @@ function start() {
         echo "$ip $host" >> /etc/hosts
     done
 
+    ulimit -n 65536
+
     if [ -e /var/lib/rabbitmq/mnesia/ ]; then
         echo "mnesia is already exists"
+        _start_rabbitmq
+        rabbitmq-plugins list | grep '*] rabbitmq_management' || rabbitmq-plugins enable rabbitmq_management
     else
+        _start_rabbitmq
         if [ $HOSTNAME == $master ]; then
-            ( \
-            sleep 120; \
-            rabbitmqctl start_app; \
-            sleep 2; \
-            rabbitmqctl add_user $user $pass; \
-            rabbitmqctl set_user_tags $user $tags; \
-            rabbitmqctl add_user $rouser $ropass; \
-            rabbitmqctl set_user_tags $rouser $tags; \
-            rabbitmqctl delete_user guest; \
+            rabbitmqctl start_app
+            sleep 2
+            rabbitmqctl add_user $user $pass
+            rabbitmqctl set_user_tags $user $tags
+            rabbitmqctl add_user $rouser $ropass
+            rabbitmqctl set_user_tags $rouser $tags
+            rabbitmqctl delete_user guest
             {{- range $vhost_name, $vhost := $rabbitmq.vhost_map }}
-            rabbitmqctl add_vhost {{ $vhost_name }}; \
-            rabbitmqctl set_permissions -p {{ $vhost_name }} $user '.*' '.*' '.*'; \
-            rabbitmqctl set_permissions -p {{ $vhost_name }} $rouser '' '' '.*'; \
+            rabbitmqctl add_vhost {{ $vhost_name }}
+            rabbitmqctl set_permissions -p {{ $vhost_name }} $user '.*' '.*' '.*'
+            rabbitmqctl set_permissions -p {{ $vhost_name }} $rouser '' '' '.*'
             {{- range $vhost.policies }}
-            rabbitmqctl set_policy {{ . }} -p {{ $vhost_name }}; \
+            rabbitmqctl set_policy {{ . }} -p {{ $vhost_name }}
             {{- end }}
             {{- end }}
-            rabbitmq-plugins enable rabbitmq_management; \
-            ) &
+            rabbitmq-plugins enable rabbitmq_management
 
         else
-            ( \
-            sleep 120; \
-            rabbitmqctl stop_app; \
-            sleep 2; \
-            rabbitmqctl join_cluster rabbit@${master}; \
-            sleep 2; \
-            rabbitmqctl start_app;
-            sleep 2; \
-            rabbitmq-plugins enable rabbitmq_management; \
-            ) &
+            rabbitmqctl stop_app
+            sleep 2
+            rabbitmqctl join_cluster rabbit@${master}
+            sleep 2
+            rabbitmqctl start_app
+            sleep 2
+            rabbitmq-plugins enable rabbitmq_management
         fi
     fi
 
-    ulimit -n 32768
-    rabbitmq-server $@
+    echo "Bringing RabbitMQ back to the foreground"
+    fg
+}
+
+
+function _start_rabbitmq() {
+    set -m
+    echo "Starting RabbitMQ in the background"
+    rabbitmq-server $@ &
+    echo "Waiting for RabbitMQ to come up..."
+    until $(curl -k --fail --output /dev/null --silent http://localhost:5672); do
+      printf "."
+      sleep 2
+    done
+    echo "RabbitMQ is up and running."
 }
 
 

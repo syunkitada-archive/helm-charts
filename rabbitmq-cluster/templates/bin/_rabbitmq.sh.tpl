@@ -11,27 +11,24 @@ function help() {
 }
 
 
-function _init_master() {
-    nodes=`kubectl get pod -l app={{ $name }} | grep Running | awk '{print $1}'`
-    if [ `echo "$nodes" | wc -l` == {{ $rabbitmq.replicas }} ]; then
-        tmp_master=`echo "$nodes" | head -n 1`
-        kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
-    fi
-}
-
-
 function _change_master() {
-    nodes=`kubectl get pod -l app={{ $name }} | grep Running | grep ' 1/1 ' | awk '{print $1}'`
-    if [ `echo "$nodes" | wc -l` == {{ $rabbitmq.replicas }} ]; then
-        tmp_master=`echo "$nodes" | grep -v $HOSTNAME | head -n 1`
+    ready_pods=`kubectl get pod -l app={{ $name }} | grep -v $HOSTNAME | grep Running | grep ' 1/1 ' | awk '{print $1}'`
+    if [ ! -z $ready_pods ]; then
+        tmp_master=`echo "$ready_pods" | head -n 1`
         kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
+    else
+        running_pods=`kubectl get pod -l app={{ $name }} | grep Running | awk '{print $1}'`
+        if [ ! -z $running_pods ]; then
+            tmp_master=`echo "$running_pods" | head -n 1`
+            kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
+        fi
     fi
+
 }
 
 
 master=none
 function _set_master() {
-    set +e
     while :
     do
         master=`kubectl get cm {{ $name }} -o jsonpath='{.data.master}'`
@@ -53,16 +50,12 @@ function _set_master() {
                 fi
             else
                 echo 'Failed get master pod' 1>&2
-                if [ $master == 'dummy' ]; then
-                    # If master is dummy(this is initial value), _init_master set master value.
-                    _init_master
-                else
-                    # If master pod is not found, _change_master set master value from existing pods.
-                    _change_master
-                fi
+                _change_master
             fi
         else
-            echo 'Failed get cm' 1>&2
+            echo 'Failed get cm, this pod will exit after 10 seconds.' 1>&2
+            sleep 10
+            exit 1
         fi
         echo 'Sleep 10' 1>&2
         sleep 10
@@ -71,7 +64,9 @@ function _set_master() {
 
 
 function start() {
+    set +e
     _set_master
+    set -e
 
     rouser={{ $rabbitmq.ro_user }}
     ropass={{ $rabbitmq.ro_password }}
@@ -91,6 +86,11 @@ function start() {
     done
 
     ulimit -n 65536
+
+    if [ -e /var/lib/rabbitmq/mnesia/ ]; then
+        echo "mnesia is already exists, and check cluster_nodes.conf"
+        grep ${master} /var/lib/rabbitmq/mnesia/rabbit\@${HOSTNAME}/cluster_nodes.config || rm -rf /var/lib/rabbitmq/mnesia
+    fi
 
     if [ -e /var/lib/rabbitmq/mnesia/ ]; then
         echo "mnesia is already exists"
@@ -133,26 +133,62 @@ function start() {
 
 
 function _start_rabbitmq() {
+    set +e
     set -m
     echo "Starting RabbitMQ in the background"
     rabbitmq-server $@ &
     echo "Waiting for RabbitMQ to come up..."
+    count=0
     until $(curl -k --fail --output /dev/null --silent http://localhost:5672); do
-      printf "."
-      sleep 2
+        printf "."
+        sleep 2
+        ((count++))
+        if [ $count -gt 60 ]; then
+            kubectl delete pod $HOSTNAME &
+            sleep 30
+            exit 1
+        fi
     done
     echo "RabbitMQ is up and running."
+    set -e
 }
 
 
 function liveness() {
-    test `ss -ln | egrep ":5672 |:15672 |:25672 " | wc -l` == 3
-    rabbitmqctl eval 'ok.'
+    test -e /tmp/status
 }
 
 
 function readiness() {
-    liveness
+    set +e
+
+    test `ss -ln | egrep ":5672 |:15672 |:25672 " | wc -l` == 3
+    if [ $? != 0 ]; then
+        rm -rf /tmp/status
+        exit 1
+    fi
+
+    rabbitmqctl eval 'ok.'
+    if [ $? != 0 ]; then
+        rm -rf /tmp/status
+        exit 1
+    fi
+
+    rabbitmqctl node_health_check -t 10
+    if [ $? != 0 ]; then
+        rm -rf /tmp/status
+        exit 1
+    fi
+
+    rabbitmqctl cluster_status | grep -F '{partitions,[]},'
+    result=$?
+    if [ $result != 0 ]; then
+        rm -rf /tmp/status
+        exit 1
+    fi
+
+    set -e
+    touch /tmp/status
 }
 
 

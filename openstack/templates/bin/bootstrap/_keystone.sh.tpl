@@ -7,9 +7,14 @@
 
 source /mnt/openstack/etc/adminrc
 
-helm get openstack-keystone \
-    || helm install {{ .Values.chart_prefix }}/keystone \
-        --name openstack-keystone --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml
+(\
+    helm get openstack-keystone && \
+    helm upgrade openstack-keystone {{ .Values.chart_prefix }}/keystone \
+        --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml \
+) || (\
+    helm install -n openstack-keystone {{ .Values.chart_prefix }}/keystone \
+        --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml \
+)
 
 kubectl get cm keystone-etc -o jsonpath='{.data.keystone\.conf}' > /etc/keystone/keystone.conf
 mkdir -p /etc/keystone/fernet-keys

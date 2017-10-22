@@ -3,18 +3,20 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: k8s-rabbitmq-manager
+  name: k8s-openstack-monitor-manager
   labels:
-    chart: k8s-rabbitmq-manager
+    chart: openstack
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   template:
     metadata:
-      name: k8s-rabbitmq-manager
+      name: k8s-openstack-monitor-manager
       labels:
-        chart: k8s-rabbitmq-manager
+        chart: openstack
+      annotations:
+        openstack-manager-configmap: {{ tuple "openstack-manager-configmap.yaml" . | include "funcs.hash" }}
     spec:
-      serviceAccount: rabbitmq
+      serviceAccount: openstack
       nodeSelector:
         openstack-controller: enable
         openstack-region: {{ $openstack.region }}
@@ -22,11 +24,18 @@ spec:
         develop-node: "enable"
         {{- end }}
       containers:
-        - name: k8s-rabbitmq-manager
+        - name: k8s-openstack-monitor-manager
           {{- if .Values.is_develop }}
-          command: ["/opt/openstack-manager/bin/k8s-rabbitmq-manager-watchdog"]
+          command: [
+            "bash", "-c",
+            "source /mnt/openstack/etc/resolvrc && /opt/openstack-manager/bin/k8s-openstack-monitor-manager-watchdog"
+          ]
+          # command: ["bash", "-c", "sleep 3600"]
           {{- else }}
-          command: ["/opt/openstack-manager/bin/k8s-rabbitmq-manager"]
+          command: [
+            "bash", "-c",
+            "source /mnt/openstack/etc/resolvrc && /opt/openstack-manager/bin/k8s-openstack-monitor-manager"
+          ]
           {{- end }}
           image: {{ $image.repository }}
           imagePullPolicy: {{ $image.pull_policy }}

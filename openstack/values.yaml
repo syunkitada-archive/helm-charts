@@ -2,6 +2,7 @@ is_develop: false
 chart_repo: https://syunkitada.github.io/chartrepo/charts
 chart_prefix: charts
 
+
 openstack:
   debug: true
   version: pike
@@ -103,6 +104,7 @@ rabbitmq:
       policies:
         - ha-two '.*' '{"ha-mode":"exactly","ha-params":2,"ha-sync-mode":"automatic"}'
         - TTL 'notifications.*' '{"message-ttl":600000}' --apply-to queues
+
 
 image_map:
   pike:

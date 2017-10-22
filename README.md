@@ -1,29 +1,75 @@
 # openstack-helm
 
-## Requires
-### Install Helm
-``` bash
-wget https://storage.googleapis.com/kubernetes-helm/helm-v2.5.1-linux-amd64.tar.gz && \
-tar -xf helm-v2.5.1-linux-amd64.tar.gz && \
-sudo mv linux-amd64/helm /usr/local/bin/ && \
-helm init && \
-kubectl create serviceaccount --namespace kube-system tiller && \
-kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller && \
-kubectl patch deployment tiller-deploy -p'{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}' -n kube-system
-```
+
+## Requirements
+* helm>=2.6.0
+* kubernetes>=2.7.0
+
 
 ### Set helm repo
+* openstack-helmの各chartを以下のrepoに置いてあるので、これを追加します
 ```
 helm init -c
 helm repo add charts https://syunkitada.github.io/chartrepo/charts
 ```
 
-### Create NS for openstack
+
+### Set labels
+* 各ノードに役割に応じたラベルを振ります
+    * ingress-controller=enable
+        * ingress-controllerはkubernetesクラスタで共有することを想定
+        * VIP配下にingress-controllerが配置されることを想定し、そのノードにこのラベルを設定します
+        * このラベルがついてるingress-controllerにIngressをデプロイします
+    * openstack-region=[hoge]
+        * Kubernetesは各リージョンで共有されると想定
+        * そのリージョン用のノードすべてにこのラベルを設定します
+    * rabbitmq-node=enable
+        * openstack-region, rabbitmq-nodeが設定されてるノードにRabbitmq Clusterをデプロイします
+        * 推奨は、3台以上のノードにこのラベルを設定します
+    * openstack-controller=enable
+        * openstack-region, openstack-controllerが設定されてるノードにOpenStack Controller群をデプロイします
+        * 推奨は、3台以上のノードにこのラベルを設定します
+    * openstack-compute=enable
+        * TODO
+    * openstack-net-node=enable
+        * TODO
+    * block-storage=enable
+        * TODO
+    * object-storage=enable
+        * TODO
+    * database-node=enable
+        * TODO
+    * develop-node=enable
+        * 開発で利用するノードがある場合は、このラベルを設定します
+```
+kubectl label nodes kubernetes-centos7-1.example.com ingress-controller=enable
+
+kubectl label nodes kubernetes-centos7-1.example.com rabbitmq-node=enable
+kubectl label nodes kubernetes-centos7-2.example.com rabbitmq-node=enable
+kubectl label nodes kubernetes-centos7-3.example.com rabbitmq-node=enable
+
+kubectl label nodes kubernetes-centos7-1.example.com openstack-region=openstack
+kubectl label nodes kubernetes-centos7-2.example.com openstack-region=openstack
+kubectl label nodes kubernetes-centos7-3.example.com openstack-region=openstack
+
+kubectl label nodes kubernetes-centos7-1.example.com openstack-controller=enable
+kubectl label nodes kubernetes-centos7-2.example.com openstack-controller=enable
+kubectl label nodes kubernetes-centos7-3.example.com openstack-controller=enable
+
+kubectl label nodes kubernetes-centos7-1.example.com develop-node=enable
+```
+
+
+### Create NS for Openstack
+* Openstack用のリソースを展開するためのnamespaceを作成します
+* このnamespaceは、Region名と一致させます
 ```
 kubectl create ns openstack
 ```
 
-### Create TLS for openstack
+
+### Create TLS for Ingress
+* Ingressで利用する各Region用のTLSを作成します
 ```
 cat << EOS > openssl.cnf
 [req]
@@ -46,29 +92,7 @@ kubectl create secret tls tls-ingress --key server.key --cert server.crt -n open
 ```
 
 
-### set label
-```
-kubectl label nodes kubernetes-centos7-1.example.com ingress-controller=enable
-
-kubectl label nodes kubernetes-centos7-1.example.com rabbitmq-node=enable
-kubectl label nodes kubernetes-centos7-2.example.com rabbitmq-node=enable
-kubectl label nodes kubernetes-centos7-3.example.com rabbitmq-node=enable
-
-kubectl label nodes kubernetes-centos7-1.example.com openstack-region=openstack
-kubectl label nodes kubernetes-centos7-2.example.com openstack-region=openstack
-kubectl label nodes kubernetes-centos7-3.example.com openstack-region=openstack
-
-kubectl label nodes kubernetes-centos7-1.example.com openstack-controller=enable
-kubectl label nodes kubernetes-centos7-2.example.com openstack-controller=enable
-kubectl label nodes kubernetes-centos7-3.example.com openstack-controller=enable
-
-kubectl label nodes kubernetes-centos7-3.example.com openstack-compute=enable
-
-kubectl label nodes kubernetes-centos7-1.example.com develop-node=enable
-```
-
-
-## Install charts
+## Install charts for production
 ```
 # Install ingress
 helm install --name ingress charts/ingress
@@ -79,22 +103,21 @@ cp openstack-helm/openstack/values.yaml ./values.yaml
 vim values.yaml
 
 # Install openstack
-helm install charts/openstack --name openstack --namespace openstack -f values.yaml
+helm install charts/openstack -n openstack --namespace openstack -f values.yaml
 ```
 
-## Develop
+## Install charts for development
 ```
+git clone git@github.com:syunkitada/openstack-manager.git
+cd openstack-manager
+make dev
+
 # Install openstack for develop
-helm upgrade openstack openstack -f openstack/values.yaml --set is_develop=true,chart_prefix=/home/fabric/openstack-helm
+helm install openstack-helm/openstack -n openstack -f openstack-helm/openstack/values.yaml --set is_develop=true,chart_prefix=/home/fabric/openstack-helm
 ```
 
 
 # Design
-* 各ノードを役割に応じてラベルを振る
-  * controller, compute, net-node, block-storage, object-storage, database
-  * Kubernetesは各regionで共有することを前提する
-      openstack-region=openstack
-
 * controller nodes
   * ステートレスなノード群
   * ingress, service, deploymentリソースによりAPIを構成するノード群

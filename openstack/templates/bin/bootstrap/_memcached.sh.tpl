@@ -2,8 +2,13 @@
 
 source /mnt/openstack/etc/adminrc
 
-helm get openstack-memcached \
-    || helm install {{ .Values.chart_prefix }}/memcached \
-        --name openstack-memcached --namespace {{ .Release.Namespace }} \
+(\
+    helm get openstack-memcached && \
+    helm upgrade openstack-memcached {{ .Values.chart_prefix }}/memcached \
+        --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml \
         --set replicaCount=1,memcached.maxItemMemory=512 \
-        -f /mnt/openstack/etc/values.yaml
+) || (\
+    helm install -n openstack-memcached {{ .Values.chart_prefix }}/memcached \
+        --namespace {{ .Release.Namespace }} -f /mnt/openstack/etc/values.yaml \
+        --set replicaCount=1,memcached.maxItemMemory=512 \
+)

@@ -3,21 +3,20 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: openstack-deploy-manager
+  name: k8s-openstack-deploy-manager
   labels:
     chart: openstack
 spec:
   replicas: 1
   template:
     metadata:
-      name: openstack-deploy-manager
+      name: k8s-openstack-deploy-manager
       labels:
         chart: openstack
       annotations:
         openstack-manager-configmap: {{ tuple "openstack-manager-configmap.yaml" . | include "funcs.hash" }}
+        openstack-configmap: {{ tuple "openstack-configmap.yaml" . | include "funcs.hash" }}
     spec:
-      hostNetwork: true
-      dnsPolicy: ClusterFirst
       serviceAccount: openstack
       nodeSelector:
         openstack-controller: enable
@@ -26,12 +25,12 @@ spec:
         develop-node: "enable"
         {{- end }}
       containers:
-        - name: openstack-deploy-manager
+        - name: k8s-openstack-deploy-manager
           {{- if .Values.is_develop }}
-          command: ["/opt/openstack-manager/bin/openstack-deploy-manager-watchdog"]
+          command: ["/opt/openstack-manager/bin/k8s-openstack-deploy-manager-watchdog"]
           # command: ["bash", "-c", "sleep 3600"]
           {{- else }}
-          command: ["/opt/openstack-manager/bin/openstack-deploy-manager"]
+          command: ["/opt/openstack-manager/bin/k8s-openstack-deploy-manager"]
           {{- end }}
           image: {{ $image.repository }}
           imagePullPolicy: {{ $image.pull_policy }}

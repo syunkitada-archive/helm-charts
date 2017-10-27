@@ -24,9 +24,9 @@ spec:
       containers:
         - name: k8s-rabbitmq-manager
           {{- if .Values.is_develop }}
-          command: ["/opt/openstack-manager/bin/k8s-rabbitmq-manager-watchdog"]
+          command: ["bash", "-c", "/mnt/openstack/bin/bootstrap-00-common.sh && /opt/openstack-manager/bin/k8s-rabbitmq-manager-watchdog"]
           {{- else }}
-          command: ["/opt/openstack-manager/bin/k8s-rabbitmq-manager"]
+          command: ["bash", "-c", "/mnt/openstack/bin/bootstrap-00-common.sh && /opt/openstack-manager/bin/k8s-rabbitmq-manager"]
           {{- end }}
           image: {{ $image.repository }}
           imagePullPolicy: {{ $image.pull_policy }}

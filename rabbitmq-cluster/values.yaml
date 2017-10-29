@@ -5,9 +5,9 @@ rabbitmq:
     pullPolicy: Always
   replicas: 3
   user: openstack
-  password: openstackpass
+  pass: openstackpass
   ro_user: openstackro
-  ro_password: openstackropass
+  ro_pass: openstackropass
   master: dummy
   vhost_map:
     test:

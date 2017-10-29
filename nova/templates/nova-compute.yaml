@@ -1,4 +1,6 @@
 {{- $nova := .Values.chart.nova }}
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack" }}
 
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -25,8 +27,8 @@ spec:
       containers:
         - name: nova-compute
           command: ["/mnt/nova/bin/nova.sh", "start_compute"]
-          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
-          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           securityContext:
             privileged: true
           volumeMounts:

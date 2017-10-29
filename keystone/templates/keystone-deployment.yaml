@@ -1,3 +1,5 @@
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack" }}
 {{- $keystone := .Values.chart.keystone }}
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -21,8 +23,8 @@ spec:
       containers:
         - name: nginx
           command: ["/mnt/keystone/bin/keystone.sh", "start_nginx"]
-          image: "{{ $keystone.image.repository }}:{{ $keystone.image.tag }}"
-          imagePullPolicy: {{ $keystone.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           ports:
             - name: public
               containerPort: 5000
@@ -37,8 +39,8 @@ spec:
               mountPath: /mnt/openstack/etc
         - name: keystone-public
           command: ["/mnt/keystone/bin/keystone.sh", "start_public"]
-          image: "{{ $keystone.image.repository }}:{{ $keystone.image.tag }}"
-          imagePullPolicy: {{ $keystone.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           volumeMounts:
             - name: keystone-bin
               mountPath: /mnt/keystone/bin
@@ -50,8 +52,8 @@ spec:
               mountPath: /etc/keystone/fernet-keys
         - name: keystone-admin
           command: ["/mnt/keystone/bin/keystone.sh", "start_admin"]
-          image: "{{ $keystone.image.repository }}:{{ $keystone.image.tag }}"
-          imagePullPolicy: {{ $keystone.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           volumeMounts:
             - name: keystone-bin
               mountPath: /mnt/keystone/bin

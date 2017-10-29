@@ -1,4 +1,6 @@
 {{- $neutron := .Values.chart.neutron }}
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack" }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -21,8 +23,8 @@ spec:
       containers:
         - name: neutron
           command: ["/mnt/neutron/bin/neutron.sh", "start"]
-          image: "{{ $neutron.image.repository }}:{{ $neutron.image.tag }}"
-          imagePullPolicy: {{ $neutron.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           readinessProbe:
             timeoutSeconds: {{ $neutron.probes_timeout }}
             exec:

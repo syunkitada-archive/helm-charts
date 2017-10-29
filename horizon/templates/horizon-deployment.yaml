@@ -1,4 +1,6 @@
 {{- $horizon := .Values.chart.horizon }}
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack" }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -21,8 +23,8 @@ spec:
       containers:
         - name: nginx
           command: ["/mnt/horizon/bin/horizon.sh", "start_nginx"]
-          image: "{{ $horizon.image.repository }}:{{ $horizon.image.tag }}"
-          imagePullPolicy: {{ $horizon.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           ports:
             - name: horizon
               containerPort: 8000
@@ -35,8 +37,8 @@ spec:
               mountPath: /mnt/openstack/etc
         - name: horizon
           command: ["/mnt/horizon/bin/horizon.sh", "start"]
-          image: "{{ $horizon.image.repository }}:{{ $horizon.image.tag }}"
-          imagePullPolicy: {{ $horizon.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           volumeMounts:
             - name: horizon-bin
               mountPath: /mnt/horizon/bin

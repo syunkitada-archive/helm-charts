@@ -1,4 +1,6 @@
 {{- $nova := .Values.chart.nova }}
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack" }}
 
 apiVersion: apps/v1beta1
 kind: StatefulSet
@@ -25,8 +27,8 @@ spec:
       containers:
         - name: nova-conductor
           command: ["/mnt/nova/bin/nova.sh", "start_conductor"]
-          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
-          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           volumeMounts:
             - name: nova-bin
               mountPath: /mnt/nova/bin

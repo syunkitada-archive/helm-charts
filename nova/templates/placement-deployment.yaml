@@ -1,4 +1,7 @@
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack" }}
 {{- $nova := .Values.chart.nova }}
+
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -19,8 +22,8 @@ spec:
       containers:
         - name: nginx
           command: ["/mnt/placement/bin/placement.sh", "start_nginx"]
-          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
-          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           ports:
             - name: placement-api
               containerPort: 8778
@@ -31,8 +34,8 @@ spec:
               mountPath: /mnt/placement/etc
         - name: placement-api
           command: ["/mnt/placement/bin/placement.sh", "start_placement"]
-          image: "{{ $nova.image.repository }}:{{ $nova.image.tag }}"
-          imagePullPolicy: {{ $nova.image.pull_prolicy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           volumeMounts:
             - name: placement-bin
               mountPath: /mnt/placement/bin

@@ -1,4 +1,6 @@
 {{- $glance := .Values.chart.glance }}
+{{- $openstack := .Values.openstack }}
+{{- $image := index .Values.image_map $openstack.version "openstack" }}
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -21,8 +23,8 @@ spec:
       containers:
         - name: glance-api
           command: ["/mnt/glance/bin/glance.sh", "start_api"]
-          image: "{{ $glance.image.repository }}:{{ $glance.image.tag }}"
-          imagePullPolicy: {{ $glance.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           ports:
             - containerPort: 9292
           readinessProbe:
@@ -43,8 +45,8 @@ spec:
               mountPath: /mnt/openstack/etc
         - name: glance-registry
           command: ["/mnt/glance/bin/glance.sh", "start_registry"]
-          image: "{{ $glance.image.repository }}:{{ $glance.image.tag }}"
-          imagePullPolicy: {{ $glance.image.pull_policy }}
+          image: {{ $image.repository }}
+          imagePullPolicy: {{ $image.pull_policy }}
           ports:
             - containerPort: 9191
           readinessProbe:

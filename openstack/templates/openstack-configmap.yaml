@@ -29,8 +29,6 @@ data:
 {{ tuple "bin/bootstrap/_mysql.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-02-memcached.sh: |+
 {{ tuple "bin/bootstrap/_memcached.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
-  bootstrap-03-rabbitmq.sh: |+
-{{ tuple "bin/bootstrap/_rabbitmq.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix }}
   bootstrap-10-keystone.sh: |+
 {{ tuple "bin/bootstrap/_keystone.sh.tpl" . | include "funcs.template" | indent 4 | replace "@domain_suffix" $domain_suffix | replace "@ingress_suffix" $ingress_suffix }}
   bootstrap-11-glance.sh: |+

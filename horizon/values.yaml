@@ -1,7 +1,3 @@
 chart:
   horizon:
     replica_count: 1
-    image:
-      repository: syunkitada/centos7-openstack-all
-      tag: pike
-      pull_policy: IfNotPresent

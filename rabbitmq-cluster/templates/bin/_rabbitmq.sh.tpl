@@ -13,12 +13,12 @@ function help() {
 
 function _change_master() {
     ready_pods=`kubectl get pod -l app={{ $name }} | grep -v $HOSTNAME | grep Running | grep ' 1/1 ' | awk '{print $1}'`
-    if [ ! -z $ready_pods ]; then
+    if [ "$ready_pods" != "" ]; then
         tmp_master=`echo "$ready_pods" | head -n 1`
         kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
     else
         running_pods=`kubectl get pod -l app={{ $name }} | grep Running | awk '{print $1}'`
-        if [ ! -z $running_pods ]; then
+        if [ "$running_pods" != "" ]; then
             tmp_master=`echo "$running_pods" | head -n 1`
             kubectl patch cm {{ $name }} -p "{\"data\":{\"master\":\"$tmp_master\"}}"
         fi
@@ -69,10 +69,10 @@ function start() {
     set -e
 
     rouser={{ $rabbitmq.ro_user }}
-    ropass={{ $rabbitmq.ro_password }}
+    ropass={{ $rabbitmq.ro_pass }}
     user={{ $rabbitmq.user }}
-    pass={{ $rabbitmq.password }}
-    cookie={{ $name }}{{ $rabbitmq.ro_password }}
+    pass={{ $rabbitmq.pass }}
+    cookie={{ $name }}{{ $rabbitmq.ro_pass }}
     tags=administrator
 
     echo $cookie > var/lib/rabbitmq/.erlang.cookie
@@ -139,7 +139,7 @@ function _start_rabbitmq() {
     rabbitmq-server $@ &
     echo "Waiting for RabbitMQ to come up..."
     count=0
-    until $(curl -k --fail --output /dev/null --silent http://localhost:5672); do
+    until [ `ss -ln | grep ":5672" | wc -l` = 1 ]; do
         printf "."
         sleep 2
         ((count++))

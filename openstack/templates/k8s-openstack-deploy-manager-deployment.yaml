@@ -26,12 +26,10 @@ spec:
         {{- end }}
       containers:
         - name: k8s-openstack-deploy-manager
-          {{- if .Values.is_develop }}
-          command: ["/opt/openstack-manager/bin/k8s-openstack-deploy-manager-watchdog"]
-          # command: ["bash", "-c", "sleep 3600"]
-          {{- else }}
-          command: ["/opt/openstack-manager/bin/k8s-openstack-deploy-manager"]
-          {{- end }}
+          command: [
+            "/opt/k8s-openstack/bin/python",
+            "/opt/k8s-openstack/lib/python2.7/site-packages/openstack-lib/k8s_openstack_deploy_manager.py",
+          ]
           image: {{ $image.repository }}
           imagePullPolicy: {{ $image.pull_policy }}
           volumeMounts:
@@ -41,9 +39,9 @@ spec:
               mountPath: /mnt/openstack/etc
             - name: openstack-manager-etc
               mountPath: /etc/openstack_manager
+            - name: openstack-lib
+              mountPath: /opt/k8s-openstack/lib/python2.7/site-packages/openstack-lib
             {{- if .Values.is_develop }}
-            - name: opt-openstack-manager
-              mountPath: /opt/openstack-manager
             - name: home
               mountPath: /home
             {{- end }}
@@ -58,10 +56,10 @@ spec:
         - name: openstack-manager-etc
           configMap:
             name: openstack-manager-etc
+        - name: openstack-lib
+          configMap:
+            name: openstack-lib
         {{- if .Values.is_develop }}
-        - name: opt-openstack-manager
-          hostPath:
-            path: /opt/openstack-manager
         - name: home
           hostPath:
             path: /home

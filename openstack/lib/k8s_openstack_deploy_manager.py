@@ -41,7 +41,7 @@ class ServiceManager(service.Service):
             self.prometheus_exporter_thread = None
 
         self.periodic_tasks = ServicePeriodicTasks()
-        self.tg.add_dynamic_timer(self.get_periodic_tasks,
+        self.tg.add_dynamic_timer(self._get_periodic_tasks,
                                   initial_delay=0,
                                   periodic_interval_max=120)
 
@@ -167,14 +167,14 @@ class ServicePeriodicTasks(periodic_task.PeriodicTasks):
         # Check helm resources
         tmp_resource_map = self.helm.get_resource_map()
         for resource_name, resource in self.resource_map.items():
-            tmp_resource = tmp_resource_map.get[resource_name]
+            tmp_resource = tmp_resource_map.get(resource_name)
             if tmp_resource['version'] != resource['version']:
                 helm_upgrade_script = os.path.join(self.bin_dir,
                                                    'helm-upgrade-{0}'.format(resource_name))
                 if os.path.exists(helm_upgrade_script):
                     util.execute(helm_upgrade_script)
 
-        self.resource_name = tmp_resource_map
+        self.resource_map = tmp_resource_map
 
 
 def main():

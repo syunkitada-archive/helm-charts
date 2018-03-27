@@ -28,7 +28,7 @@ k8s_opts = [
         help='chart_repo'),
     cfg.StrOpt(
         'chart_repo_prefix',
-        default='/home/fabric/openstack-helm',
+        default='/home/fabric/helm-charts',
         help='chart_repo_prefix'),
     cfg.StrOpt(
         'values_file',

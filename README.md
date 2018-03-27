@@ -1,4 +1,4 @@
-# openstack-helm
+# Helm Charts
 
 
 ## Requirements
@@ -7,7 +7,7 @@
 
 
 ### Set helm repo
-* openstack-helmの各chartを以下のrepoに置いてあるので、これを追加します
+* helm-chartsの各chartを以下のrepoに置いてあるので、これを追加します
 ```
 helm init -c
 helm repo add charts https://syunkitada.github.io/chartrepo/charts
@@ -98,8 +98,8 @@ kubectl create secret tls tls-ingress --key server.key --cert server.crt -n open
 helm install --name ingress charts/ingress
 
 # Create values.yaml. And if you want to change values, edit values.yaml
-git clone git@github.com:syunkitada/openstack-helm.git
-cp openstack-helm/openstack/values.yaml ./values.yaml
+git clone git@github.com:syunkitada/helm-charts.git
+cp helm-charts/openstack/values.yaml ./values.yaml
 vim values.yaml
 
 # Install openstack
@@ -113,26 +113,5 @@ cd openstack-manager
 make dev
 
 # Install openstack for develop
-helm install openstack-helm/openstack -n openstack -f openstack-helm/openstack/values.yaml --set is_develop=true,chart_prefix=/home/fabric/openstack-helm
+helm install helm-charts/openstack -n openstack -f helm-charts/openstack/values.yaml --set is_develop=true,chart_prefix=/home/fabric/helm-charts
 ```
-
-
-# Design
-* controller nodes
-  * ステートレスなノード群
-  * ingress, service, deploymentリソースによりAPIを構成するノード群
-  * Statefullset
-      * nova-scheduler, nova-conductor などのhost名を固定化させるべきものはStatefullsetを利用する
-      * 一時データを保存するmemcached, rabbitmqもStatefullsetでデプロイする
-* compute, net-node, block-storage, object-storage, database
-  * ステートフルなノード軍
-  * hostnet: true
-  * 場合によりcontrackを無効にし、kubeのネットワークにも乗せない
-  * daemonsetによってcontrollerプロセスを配備し、controllerコンテナないから親ホストの/(ルート)を/hostにマウントする
-  * /host/opt/配下にvirtualenv、/host/etc/に設定ファイル、/lib/systemd/system/にサービスファイルをコピーする
-  * /hostにchrootし、systemdでサービスを起動する
-    * このため、サービスプロセスはkube管轄外となる
-  * controllerプロセスでステータスを監視し正常性をコントロールする
-* openstack-controller
-  * configmapの変更をすべてマウントし、変更を検知したらpodの環境変数にhashをセットしてpodの作り直しを促す
-  * podのステータスを監視し正常性をコントロールする
